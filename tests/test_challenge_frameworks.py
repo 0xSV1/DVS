@@ -96,6 +96,8 @@ class TestExplainEndpoint:
         data = resp.json()
 
         assert data["challenge_url"] == "/challenges/sqli"
-        assert data["walkthrough_url"] == "https://github.com/0xSV1/DVS/blob/main/docs/walkthroughs/01-injection-sqli.md"
+        assert (
+            data["walkthrough_url"] == "https://github.com/0xSV1/DVS/blob/main/docs/walkthroughs/01-injection-sqli.md"
+        )
         assert data["mitre_atlas"] == []
         assert data["forge"] is None
