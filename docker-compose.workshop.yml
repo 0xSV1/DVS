@@ -1,0 +1,22 @@
+# Workshop deployment overrides for DVS.
+# Binds to a configurable interface and enables CTF mode.
+#
+# Usage:
+#   docker compose -f docker-compose.yml -f docker-compose.workshop.yml up --build -d
+#
+# Required env vars:
+#   CTF_KEY     - HMAC secret for flag generation
+#   SECRET_KEY  - Session signing key
+#
+# Optional:
+#   WORKSHOP_IP - Bind address (default: 0.0.0.0; set to LAN IP for isolation)
+
+services:
+  app:
+    ports:
+      - "${WORKSHOP_IP:-0.0.0.0}:1337:8000"
+    environment:
+      - CTF_MODE=true
+      - CTF_KEY=${CTF_KEY}
+      - SECRET_KEY=${SECRET_KEY}
+      - UNSAFE_CHALLENGES=true

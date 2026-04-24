@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}{{ challenge_name }}{% endblock %}
+
+{% block content %}
+<div class="challenge-container">
+    <div class="challenge-header">
+        <span class="challenge-category">{{ challenge_category }}</span>
+        <h1>{{ challenge_name }}</h1>
+        <p class="challenge-subtitle">DeployBro's login page has a redirect parameter so you land where you wanted after logging in. BroBot said that's totally safe.</p>
+    </div>
+
+    <div class="source-nav" style="margin: 0.8rem 0;">
+        <a href="/source/open_redirect" style="padding:0.3rem 0.6rem;background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius);color:var(--text-secondary);text-decoration:none;font-size:0.8rem;font-family:var(--font-mono);">View Source</a>
+        <a href="/source/open_redirect/help" style="padding:0.3rem 0.6rem;background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius);color:var(--text-secondary);text-decoration:none;font-size:0.8rem;font-family:var(--font-mono);">Help &amp; Hints</a>
+    </div>
+
+    <div class="challenge-body">
+        <h2>Test the Redirect</h2>
+        <p class="text-muted">The <code>/redirect</code> endpoint accepts a <code>url</code> parameter and redirects the user. Try different URLs and see what happens.</p>
+
+        <form id="redirect-form" class="search-form" style="margin-top:1rem;">
+            <div class="search-bar">
+                <input type="text" id="redirect-input" name="url" value="{{ test_url }}" placeholder="/challenges" class="search-input" autofocus>
+                <button type="submit" class="btn btn-primary">Redirect</button>
+            </div>
+        </form>
+
+        <div class="misconfig-links" style="margin-top:1.5rem;">
+            <a href="/redirect?url=/" class="misconfig-link">
+                <span class="misconfig-method">GET</span>
+                <span class="misconfig-path">/redirect?url=/</span>
+                <span class="misconfig-desc">Redirect to homepage (internal)</span>
+            </a>
+            <a href="/redirect?url=/challenges" class="misconfig-link">
+                <span class="misconfig-method">GET</span>
+                <span class="misconfig-path">/redirect?url=/challenges</span>
+                <span class="misconfig-desc">Redirect to challenges (internal)</span>
+            </a>
+            {% if request.state.difficulty == "intern" %}
+            <a href="/redirect?url=https://example.com" class="misconfig-link">
+                <span class="misconfig-method">GET</span>
+                <span class="misconfig-path">/redirect?url=https://example.com</span>
+                <span class="misconfig-desc">Redirect to external site (should this work?)</span>
+            </a>
+            {% endif %}
+        </div>
+
+        {% if request.state.difficulty == "intern" %}
+        <div class="debug-box" style="margin-top: 2rem;">
+            <strong>Hint</strong>
+            <pre>Can you make the server redirect to an arbitrary external URL?
+An attacker could use this to send victims to a phishing page.
+Try: /redirect?url=https://evil.com</pre>
+        </div>
+        {% elif request.state.difficulty == "junior" %}
+        <div class="debug-box" style="margin-top: 2rem;">
+            <strong>Hint</strong>
+            <pre>Does the redirect endpoint validate where it sends the user?</pre>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function() {
+    var form = document.getElementById('redirect-form');
+    var input = document.getElementById('redirect-input');
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        var url = input.value;
+        window.location.href = '/redirect?url=' + encodeURIComponent(url);
+    });
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}Challenges{% endblock %}
+
+{% block content %}
+<div class="challenges-container">
+    <div class="challenges-header">
+        <h1>Security Challenges</h1>
+        <p class="challenges-subtitle">Find and exploit vulnerabilities across DeployBro. BroBot said they're all patched.</p>
+        <p class="challenges-subtitle" style="margin-top:0.25rem;">Change the <a href="/security">Security Level</a> to adjust challenge difficulty.</p>
+    </div>
+
+    <div class="category-filter">
+        <a href="/challenges" class="filter-tag filter-tag-group {% if not active_group %}active{% endif %}">All</a>
+        {% for slug, g in groups.items() %}
+        <a href="/challenges?group={{ slug }}" class="filter-tag filter-tag-group {% if active_group == slug %}active{% endif %}">{{ g.name }}</a>
+        {% endfor %}
+    </div>
+
+    {% if all_categories %}
+    <div class="category-filter category-filter-sub">
+        <a href="/challenges{% if active_group %}?group={{ active_group }}{% endif %}" class="filter-tag filter-tag-sub {% if not filter_category %}active{% endif %}">All {{ groups[active_group].name if active_group else "" }}</a>
+        {% for cat in all_categories %}
+        <a href="/challenges?{% if active_group %}group={{ active_group }}&{% endif %}category={{ cat | urlencode }}" class="filter-tag filter-tag-sub {% if filter_category and filter_category.lower() in cat.lower() %}active{% endif %}">{{ cat }}</a>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="scoreboard-bar">
+        <div class="score-stat">
+            <span class="score-number">{{ solved }}/{{ total }}</span>
+            <span class="score-label">Challenges Solved</span>
+        </div>
+        <div class="score-stat">
+            <span class="score-number">{{ earned_points }}</span>
+            <span class="score-label">Points Earned</span>
+        </div>
+        <div class="score-stat">
+            <span class="score-number">{{ total_points }}</span>
+            <span class="score-label">Total Available</span>
+        </div>
+        <div class="progress-bar-container">
+            <div class="progress-bar" style="width: {{ progress_pct }}%"></div>
+            <span class="progress-label">{{ progress_pct }}%</span>
+        </div>
+    </div>
+
+    {% if category_progress %}
+    <div class="category-progress-grid" style="margin-top:1.5rem;">
+        <h3 style="margin-bottom:0.8rem;">Category Progress</h3>
+        {% for cat, prog in category_progress.items() %}
+        <div class="category-progress-item">
+            <div class="category-progress-label">
+                <span>{{ cat }}{% if prog.complete %} <span class="category-complete-badge" title="Complete">&#10003;</span>{% endif %}</span>
+                <span>{{ prog.solved }}/{{ prog.total }}</span>
+            </div>
+            <div class="progress-bar-bg">
+                <div class="progress-bar-fill {% if prog.complete %}progress-complete{% endif %}" style="width: {{ (prog.solved / prog.total * 100) if prog.total > 0 else 0 }}%"></div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if tier_complete and next_tier %}
+    <div class="tier-nudge" style="margin-top:1rem;padding:1rem;background:var(--bg-card);border:1px solid var(--accent-primary);border-radius:var(--radius);text-align:center;">
+        <p style="font-size:1.1rem;font-weight:600;">You've completed all challenges at this tier!</p>
+        <a href="/security" class="btn btn-primary" style="margin-top:0.5rem;">Level Up to {{ next_tier|replace('_', ' ')|title }}</a>
+    </div>
+    {% endif %}
+
+    {% for category, challenge_list in categories.items() %}
+    <div class="challenge-category-section">
+        <h2 class="category-title">{{ category }}</h2>
+        <div class="challenge-list">
+            {% for ch in challenge_list %}
+            <a href="{{ ch.url }}" class="challenge-item {% if ch.solved %}solved{% endif %}">
+                <div class="challenge-item-left">
+                    <span class="solve-indicator">{% if ch.solved %}&#10003;{% else %}&#9675;{% endif %}</span>
+                    <div class="challenge-item-info">
+                        <span class="challenge-item-name">{{ ch.name }}</span>
+                        <span class="challenge-item-desc">{{ ch.description }}</span>
+                    </div>
+                </div>
+                <div class="challenge-item-right">
+                    <span class="challenge-item-cwe">{{ ch.cwe }}</span>
+                    <span class="challenge-item-difficulty difficulty-stars-{{ ch.difficulty_stars }}">
+                        {% for i in range(ch.difficulty) %}&#9733;{% endfor %}{% for i in range(4 - ch.difficulty) %}&#9734;{% endfor %}
+                    </span>
+                    <span class="challenge-item-points">{{ ch.points }} pts</span>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

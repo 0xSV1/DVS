@@ -1,0 +1,84 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Environment files
+.env
+
+# CTF key (HMAC secret for flag generation; set CTF_KEY env var or create this file per-deployment)
+data/ctf.key
+
+# Database
+*.db
+data/dvs.db
+
+# Challenge upload artifacts
+data/uploads/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Uploads (challenge artifacts)
+app/static/uploads/*
+!app/static/uploads/.gitkeep
+
+# Coverage
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+
+# Pytest
+.pytest_cache/
+
+# Ruff
+.ruff_cache/
+
+# Docker
+docker-compose.override.yml
+
+# Model artifacts and training environments
+brobot-9b/
+brobot-gguf/
+brobot-gguf_gguf/
+brobot-lora/
+finetune-env/
+_unsloth_sentencepiece_temp/
+unsloth_compiled_cache/
+*.gguf
+
+# BroBot training run artifacts (test results, evaluation logs)
+data/brobot_test_results*.jsonl
+data/brobot_test_run_*.jsonl
+data/llm_*.json
+data/llm_*.txt
+data/*.jsonl.bak
+
+# Dependency lock files (project uses pip + requirements.txt)
+uv.lock
+
+# Claude Code artifacts
+skills-lock.json
+.claude/memory/
+.claude/settings.local.json
+.claude/skills/

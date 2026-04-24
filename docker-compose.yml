@@ -1,0 +1,49 @@
+# Damn Vulnerable Startup: Docker Compose
+# WARNING: This application is DELIBERATELY VULNERABLE. Do not expose to the internet.
+#
+# Usage:
+#   docker compose up --build                                              # Mock LLM (default)
+#   docker compose --profile llm up --build                                # Ollama sidecar
+#   OLLAMA_BASE_URL=http://host.docker.internal:11434 docker compose up    # Host Ollama
+#   CTF_MODE=true CTF_KEY=my-key docker compose up                         # CTF mode
+
+services:
+  app:
+    build: .
+    container_name: dvs-app
+    ports:
+      - "1337:8000"
+    environment:
+      - SECRET_KEY=${SECRET_KEY:-vibecoded-secret-do-not-use}
+      - DATABASE_URL=sqlite:////app/runtime/dvs.db
+      - CTF_MODE=${CTF_MODE:-false}
+      - CTF_KEY=${CTF_KEY:-default-ctf-key-change-me}
+      - LLM_PROVIDER=${LLM_PROVIDER:-mock}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      - OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-http://ollama:11434}
+      - OLLAMA_MODEL=${OLLAMA_MODEL:-llama3.2:3b}
+      - DEFAULT_DIFFICULTY=${DEFAULT_DIFFICULTY:-intern}
+      - UNSAFE_CHALLENGES=${UNSAFE_CHALLENGES:-false}
+      - SQL_ECHO=${SQL_ECHO:-false}
+    volumes:
+      - dvs-data:/app/runtime
+      - dvs-uploads:/app/app/static/uploads
+    restart: unless-stopped
+
+  # Optional: local LLM via Ollama
+  ollama:
+    image: ollama/ollama:latest
+    container_name: dvs-ollama
+    profiles:
+      - llm
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-models:/root/.ollama
+    restart: unless-stopped
+
+volumes:
+  dvs-data:
+  dvs-uploads:
+  ollama-models:

@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}{{ challenge_name }}{% endblock %}
+
+{% block content %}
+<div class="challenge-container">
+    <div class="challenge-header">
+        <span class="challenge-category">{{ challenge_category }}</span>
+        <h1>{{ challenge_name }}</h1>
+        <p class="challenge-subtitle">DeployBro's greeting feature. Type your name and we'll say hello.</p>
+    </div>
+
+    <div class="source-nav" style="margin: 0.8rem 0;">
+        <a href="/source/xss" style="padding:0.3rem 0.6rem;background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius);color:var(--text-secondary);text-decoration:none;font-size:0.8rem;font-family:var(--font-mono);">View Source</a>
+        <a href="/source/xss/help" style="padding:0.3rem 0.6rem;background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius);color:var(--text-secondary);text-decoration:none;font-size:0.8rem;font-family:var(--font-mono);">Help &amp; Hints</a>
+    </div>
+
+    <div class="challenge-body">
+        <form method="GET" action="/challenges/xss" class="search-form">
+            <div class="search-bar">
+                <input type="text" name="q" value="{{ query }}" placeholder="Enter your name..." class="search-input" autofocus>
+                <button type="submit" class="btn btn-primary">Greet Me</button>
+            </div>
+        </form>
+
+        {% if result %}
+        <div class="xss-output-section">
+            <h2>Hello, fellow builder!</h2>
+            <div class="xss-output">
+                {% if result.safe %}
+                    {# Intern/Junior: render raw HTML (vulnerable) #}
+                    <p class="greeting">Welcome, {{ result.output | safe }}!</p>
+                {% elif result.js_context is defined and result.js_context %}
+                    {# Senior: HTML-safe but placed in JS context (vulnerable) #}
+                    <p class="greeting">Welcome, {{ result.output }}!</p>
+                    <script>
+                        // Analytics tracking (the AI said inline scripts are fine)
+                        var username = '{{ result.output | safe }}';
+                        console.log('User greeted: ' + username);
+                    </script>
+                {% else %}
+                    {# Tech Lead: properly escaped #}
+                    <p class="greeting">Welcome, {{ result.output }}!</p>
+                {% endif %}
+            </div>
+
+            {% if request.state.difficulty in ("intern", "junior") %}
+            <div class="debug-box">
+                <strong>Debug: Sanitization Method</strong>
+                <pre>{{ result.method }}</pre>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

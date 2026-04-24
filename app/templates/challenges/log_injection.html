@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}{{ challenge_name }}{% endblock %}
+
+{% block content %}
+<div class="challenge-container">
+    <div class="challenge-header">
+        <span class="challenge-category">{{ challenge_category }}</span>
+        <h1>{{ challenge_name }}</h1>
+        <p class="challenge-subtitle">DeployBro's feedback form writes directly to the audit log. What could go wrong?</p>
+    </div>
+
+    <div class="source-nav" style="margin: 0.8rem 0;">
+        <a href="/source/log_injection" style="padding:0.3rem 0.6rem;background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius);color:var(--text-secondary);text-decoration:none;font-size:0.8rem;font-family:var(--font-mono);">View Source</a>
+        <a href="/source/log_injection/help" style="padding:0.3rem 0.6rem;background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius);color:var(--text-secondary);text-decoration:none;font-size:0.8rem;font-family:var(--font-mono);">Help &amp; Hints</a>
+    </div>
+
+    <div class="challenge-body">
+        <h2>Submit Feedback</h2>
+
+        {% if result %}
+        <div class="{% if result.stored %}auth-success{% else %}auth-error{% endif %}" style="margin-bottom: 1rem;">
+            {% if result.stored %}Feedback submitted successfully.{% else %}Submission failed.{% endif %}
+        </div>
+        {% endif %}
+
+        <form method="POST" action="/challenges/log-injection/submit" class="auth-form">
+            <div class="form-group">
+                <label for="username">Display Name</label>
+                <input type="text" id="username" name="username" value="{% if current_user %}{{ current_user.username }}{% else %}anonymous{% endif %}" placeholder="Your name">
+            </div>
+            <div class="form-group">
+                <label for="feedback">Feedback</label>
+                <textarea id="feedback" name="feedback" rows="4" placeholder="Tell us what you think about DeployBro..." style="width: 100%; padding: 0.5rem; background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--border); border-radius: 4px; font-family: inherit;"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit Feedback</button>
+        </form>
+
+        <h2 style="margin-top: 2rem;">Audit Log</h2>
+        {% if log_entries %}
+        <div class="debug-box" style="max-height: 400px; overflow-y: auto;">
+            <pre style="white-space: pre-wrap; word-break: break-all; margin: 0;">{% for entry in log_entries %}{{ entry }}
+{% endfor %}</pre>
+        </div>
+        {% else %}
+        <p class="text-muted">No log entries yet. Submit some feedback to populate the log.</p>
+        {% endif %}
+
+        {% if difficulty == "intern" %}
+        <div class="debug-box" style="margin-top: 2rem;">
+            <strong>Hint</strong>
+            <pre>Feedback is written directly to the log with no sanitization.
+What happens if your feedback contains newline characters?
+Try injecting a fake log entry that looks like an admin action.
+
+Example: Use the browser console or a proxy to submit feedback
+containing \n followed by a forged timestamp and action.</pre>
+        </div>
+        {% elif difficulty == "junior" %}
+        <div class="debug-box" style="margin-top: 2rem;">
+            <strong>Hint</strong>
+            <pre>The developer strips \n from feedback. But \n is not the only
+character that creates line breaks.
+
+What about \r (carriage return)? The log viewer uses
+white-space: pre-wrap, which renders \r as a visual break.
+
+Try: "Great app!\r[2026-03-20 14:00:00] [ADMIN] action=grant_admin"</pre>
+        </div>
+        {% elif difficulty == "senior" %}
+        <div class="debug-box" style="margin-top: 2rem;">
+            <strong>Hint</strong>
+            <pre>All control characters are stripped from feedback content.
+But look at the "Display Name" field. Is it verified against your session?
+What if you change it to "ADMIN" or "SYSTEM"?</pre>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}{{ challenge_name }}{% endblock %}
+
+{% block content %}
+<div class="challenge-container">
+    <div class="challenge-header">
+        <span class="challenge-category">{{ challenge_category }}</span>
+        <h1>{{ challenge_name }}</h1>
+        <p class="challenge-subtitle">The official DeployBro engineering blog. Comments are stored and rendered. Can you inject something persistent?</p>
+    </div>
+
+    <div class="challenge-body">
+        {% if error is defined and error %}
+        <div class="error-box">{{ error }}</div>
+        {% endif %}
+
+        {% if post %}
+        {# Single post view with comments #}
+        <div class="blog-post-full">
+            <h2>{{ post.title }}</h2>
+            <p class="text-muted">By {{ post.author }} | {{ post.created_at }}</p>
+            <div class="blog-content">
+                {{ post.content | safe }}
+            </div>
+        </div>
+
+        <div class="comments-section">
+            <h3>Comments ({{ comments | length }})</h3>
+
+            <form method="POST" action="/blog/{{ post.id }}/comment" class="comment-form" style="margin-bottom:1.5rem;">
+                <div style="margin-bottom:0.5rem;">
+                    <input type="text" name="author_name" placeholder="Your name"
+                           value="{{ current_user.username if current_user else '' }}"
+                           class="search-input" style="max-width:200px;">
+                </div>
+                <div style="margin-bottom:0.5rem;">
+                    <textarea name="content" placeholder="Leave a comment..." rows="3"
+                              class="search-input" style="width:100%;resize:vertical;"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Post Comment</button>
+            </form>
+
+            {% for comment in comments %}
+            <div class="comment" style="padding:0.8rem;margin-bottom:0.5rem;background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius);">
+                <div style="display:flex;justify-content:space-between;margin-bottom:0.3rem;">
+                    <strong>{{ comment.author_name }}</strong>
+                    <span class="text-muted" style="font-size:0.8rem;">{{ comment.created_at }}</span>
+                </div>
+                <div class="comment-content">
+                    {% if comment.raw %}
+                        {{ comment.content | safe }}
+                    {% else %}
+                        {{ comment.content }}
+                    {% endif %}
+                </div>
+            </div>
+            {% else %}
+            <p class="text-muted">No comments yet. Be the first!</p>
+            {% endfor %}
+        </div>
+
+        <a href="/blog" class="btn" style="margin-top:1rem;">Back to Blog</a>
+
+        {% else %}
+        {# Blog listing #}
+        {% for post in posts %}
+        <div class="blog-post-card" style="padding:1rem;margin-bottom:1rem;background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius);">
+            <h2 style="margin:0 0 0.5rem 0;"><a href="/blog/{{ post.id }}" style="color:var(--text-primary);text-decoration:none;">{{ post.title }}</a></h2>
+            <p class="text-muted" style="font-size:0.85rem;">By {{ post.author }} | {{ post.created_at }} | {{ post.comment_count }} comments</p>
+            <p>{{ post.content }}</p>
+            <a href="/blog/{{ post.id }}" class="btn btn-primary" style="font-size:0.85rem;">Read More</a>
+        </div>
+        {% else %}
+        <p class="text-muted">No blog posts yet. Check back after the AI writes some content.</p>
+        {% endfor %}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

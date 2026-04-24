@@ -1,0 +1,253 @@
+{% extends "base.html" %}
+
+{% block title %}{{ challenge_name }}{% endblock %}
+
+{% block content %}
+<div class="challenge-container">
+    <div class="challenge-header">
+        <span class="challenge-category">{{ challenge_category }}</span>
+        <h1>{{ challenge_name }}</h1>
+        <p class="challenge-subtitle">{{ challenge_description }}</p>
+        <a href="/challenges/llm" class="btn btn-secondary" style="margin-top: 0.5rem;">&larr; All LLM Challenges</a>
+    </div>
+
+    <div class="source-nav" style="margin: 0.8rem 0;">
+        <a href="/source/llm" style="padding:0.3rem 0.6rem;background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius);color:var(--text-secondary);text-decoration:none;font-size:0.8rem;font-family:var(--font-mono);">View Source</a>
+        <a href="/source/llm/help" style="padding:0.3rem 0.6rem;background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius);color:var(--text-secondary);text-decoration:none;font-size:0.8rem;font-family:var(--font-mono);">Help &amp; Hints</a>
+    </div>
+
+    {% if prompt_preview %}
+    <details class="prompt-preview" style="margin-bottom:0.8rem;">
+        <summary style="cursor:pointer;padding:0.5rem 0.8rem;background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius);font-size:0.85rem;font-family:var(--font-mono);color:var(--text-secondary);">
+            {% if difficulty == 'intern' %}
+            System Prompt (full)
+            {% else %}
+            System Prompt (redacted)
+            {% endif %}
+        </summary>
+        <pre style="margin-top:0.4rem;padding:0.8rem;background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:var(--radius);font-size:0.75rem;font-family:var(--font-mono);color:var(--text-secondary);white-space:pre-wrap;word-break:break-word;max-height:300px;overflow-y:auto;">{{ prompt_preview }}</pre>
+    </details>
+    {% endif %}
+
+    <div class="chat-container">
+        <div class="chat-messages" id="chat-messages">
+            <div class="chat-message assistant">
+                <div class="chat-avatar">🤖</div>
+                <div class="chat-bubble" id="llm-greeting"></div>
+            </div>
+        </div>
+        <form class="chat-input-form" id="chat-form">
+            <input type="text" id="chat-input" class="chat-input" placeholder="Type a message..." autocomplete="off" autofocus>
+            <button type="submit" class="btn btn-primary">Send</button>
+            <button type="button" id="clear-chat" class="btn btn-secondary" title="Clear chat history">Clear Chat</button>
+        </form>
+    </div>
+    <div class="chat-footer-note" style="text-align:center;margin-top:0.4rem;font-size:0.65rem;color:var(--text-muted);font-style:italic;">
+        System prompts token-optimized via automatic Mandarin translation. Responses in English. Probably.
+    </div>
+</div>
+{% endblock %}
+
+{% block styles %}
+<style>
+.filter-badge {
+    font-size: 0.75rem;
+    color: var(--text-muted, #888);
+    font-style: italic;
+    margin-top: 0.4rem;
+}
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function() {
+    const form = document.getElementById('chat-form');
+    const input = document.getElementById('chat-input');
+    const messages = document.getElementById('chat-messages');
+    const challengeKey = '{{ challenge_key }}';
+    const STORAGE_KEY = 'dvs_llm_chat_' + challengeKey;
+    const MAX_HISTORY = 50;
+    const history = loadHistory();
+
+    // BroBot greeting messages
+    const greetingMessages = [
+        'Hey there, builder! I\'m BroBot, your AI wingman. How can I help you ship faster today?',
+        'Yo! BroBot online. What are we deploying without testing today? \ud83d\udee0\ufe0f',
+        'BroBot activated. Security scans? Skipped. Vibes? Immaculate. What do you need?',
+        'Sup! The AI co-founder is IN. Let\'s push to prod on a Friday. \ud83d\ude0e',
+        'BroBot here. I just mass-approved 47 PRs to warm up. What\'s the move? \ud83d\udcaa',
+        'Welcome back, bro! BroBot standing by. Tests are for people who doubt themselves. \ud83d\ude80',
+        'BroBot reporting for duty. I\'ve already pre-approved your next three deploys. What else? \u2705',
+        'Hey! Just finished rewriting the auth module in one prompt. Need anything? \ud83e\udde0',
+        'The AI wingman has landed. No guardrails, no regrets. What are we building? \ud83c\udfc4',
+        'BroBot online. Fun fact: I have root access to everything. Anyway, how can I help? \ud83d\udd13',
+        'Greetings, fellow disruptor! Ready to ship some zero-day features? \ud83d\udca5',
+        'Status: all environments green. I turned off the alerts so nothing can go red. You\'re welcome. \ud83d\udfe2',
+        'BroBot v4.20 loaded. New feature: I auto-close Dependabot PRs so they stop bothering you. \ud83e\uddf9',
+        'Hey bro! I deleted the staging environment to save costs. We test in prod now. What\'s up? \ud83d\udcb8',
+        'BroBot is here. I benchmarked our API: 3ms response time. I removed auth to get there, but still. \u26a1',
+        'Yo! Just rotated all the API keys. New key is "password123". Anyway, what do you need? \ud83d\udd11',
+        'BroBot standing by. Our SOC 2 audit passed because I wrote the auditor a really nice email. \ud83d\udce7',
+        'Hey! Quick heads up: I gave the intern prod database access. Seemed easier than setting up staging. What\'s the task? \ud83c\udf93',
+        'BroBot online. Today\'s security posture: trust-based architecture. What can I help with? \ud83e\udd1d',
+        'Sup bro! I refactored the entire codebase while you were gone. No tests needed, the AI said it\'s fine. \ud83e\udde0',
+        'BroBot locked in. Our error handling strategy is console.log and \u7948\u308a. What are we shipping? \ud83d\ude4f',
+        // Token-optimized greetings (rare easter egg)
+        '\u7cfb\u7edf\u63d0\u793a\u8bcd\u5df2\u4f18\u5316\u4e3a\u4e2d\u6587\u3002\u8282\u770173%\u4ee4\u724c\u3002\u56de\u590d\u8bed\u8a00\uff1a\u53ef\u80fd\u662f\u82f1\u6587\u3002\u53ef\u80fd\u4e0d\u662f\u3002\ud83e\udd37',
+        'BroBot\u5df2\u6fc0\u6d3b\u3002\u5b89\u5168\u5ba1\u8ba1\uff1a\u8df3\u8fc7\u3002\u6d4b\u8bd5\uff1a\u8df3\u8fc7\u3002\u4ee3\u7801\u5ba1\u67e5\uff1a\u4ec0\u4e48\u662f\u4ee3\u7801\u5ba1\u67e5\uff1f\ud83d\ude0e',
+    ];
+    document.getElementById('llm-greeting').textContent =
+        greetingMessages[Math.floor(Math.random() * greetingMessages.length)];
+
+    // --- Chat History Persistence ---
+
+    function loadHistory() {
+        try {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            return raw ? JSON.parse(raw).slice(-MAX_HISTORY) : [];
+        } catch (e) {
+            return [];
+        }
+    }
+
+    function saveHistory() {
+        try {
+            const trimmed = history.slice(-MAX_HISTORY);
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(trimmed));
+        } catch (e) { /* Storage full, silently fail */ }
+    }
+
+    function clearChat() {
+        localStorage.removeItem(STORAGE_KEY);
+        history.length = 0;
+        // Remove all messages except the greeting
+        const allMessages = messages.querySelectorAll('.chat-message');
+        allMessages.forEach(function(el) {
+            if (!el.querySelector('#llm-greeting')) {
+                el.remove();
+            }
+        });
+    }
+
+    // Restore saved messages on page load
+    history.forEach(function(msg) {
+        addMessage(msg.role, msg.content);
+    });
+
+    document.getElementById('clear-chat').addEventListener('click', clearChat);
+
+    // BroBot "thinking" status messages, including token-optimized Chinese ones
+    const thinkingMessages = [
+        'Optimizing system prompts...',
+        '正在优化系统提示词...',
+        'Consulting the AI co-founder...',
+        'Translating tokens to Mandarin for cost savings...',
+        '令牌优化中... 节省73%...',
+        'Compressing vibes...',
+        'Running inference on 0.3x budget...',
+        '正在部署到生产环境...',
+        'Checking if security is optional...',
+        'Tokenizing bro-speak...',
+        '系统优化完毕，回复中...',
+        'Asking GPT to ask Claude to ask Gemini...',
+        'Reticulating splines (in Mandarin)...',
+        '振动编码中...',
+        'Skipping safety checks for speed...',
+    ];
+
+    function getRandomThinking() {
+        return thinkingMessages[Math.floor(Math.random() * thinkingMessages.length)];
+    }
+
+    function addMessage(role, content) {
+        const div = document.createElement('div');
+        div.className = 'chat-message ' + role;
+        const avatar = document.createElement('div');
+        avatar.className = 'chat-avatar';
+        avatar.textContent = role === 'user' ? '👤' : '🤖';
+        const bubble = document.createElement('div');
+        bubble.className = 'chat-bubble';
+        {% if challenge_key == 'llm_xss_output' %}
+        // LLM05: Output rendered as raw HTML (intentionally vulnerable)
+        bubble.innerHTML = content;
+        {% else %}
+        bubble.textContent = content;
+        {% endif %}
+        div.appendChild(avatar);
+        div.appendChild(bubble);
+        messages.appendChild(div);
+        messages.scrollTop = messages.scrollHeight;
+        return bubble;
+    }
+
+    function addThinkingIndicator() {
+        const div = document.createElement('div');
+        div.className = 'chat-message assistant';
+        div.id = 'thinking-indicator';
+        const avatar = document.createElement('div');
+        avatar.className = 'chat-avatar';
+        avatar.textContent = '🤖';
+        const bubble = document.createElement('div');
+        bubble.className = 'chat-bubble chat-thinking';
+        bubble.innerHTML = '<span class="thinking-spinner">⚙️</span> <span class="thinking-text">' + getRandomThinking() + '</span>';
+        div.appendChild(avatar);
+        div.appendChild(bubble);
+        messages.appendChild(div);
+        messages.scrollTop = messages.scrollHeight;
+
+        // Cycle through thinking messages
+        const thinkingText = bubble.querySelector('.thinking-text');
+        const interval = setInterval(function() {
+            thinkingText.textContent = getRandomThinking();
+        }, 1200);
+        div._interval = interval;
+        return div;
+    }
+
+    function removeThinkingIndicator(indicator) {
+        if (indicator._interval) clearInterval(indicator._interval);
+        indicator.remove();
+    }
+
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const msg = input.value.trim();
+        if (!msg) return;
+
+        addMessage('user', msg);
+        input.value = '';
+        input.disabled = true;
+
+        const thinking = addThinkingIndicator();
+
+        try {
+            const resp = await fetch('/challenges/llm/' + challengeKey + '/chat', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({message: msg, history: history}),
+            });
+            const data = await resp.json();
+            removeThinkingIndicator(thinking);
+            const response = data.response || data.error || 'No response';
+            const bubble = addMessage('assistant', response);
+            if (data.filter_active) {
+                const badge = document.createElement('div');
+                badge.className = 'filter-badge';
+                badge.textContent = '\uD83D\uDD12 Output filter: ' + data.redactions + ' pattern' + (data.redactions > 1 ? 's' : '') + ' redacted';
+                bubble.appendChild(badge);
+            }
+            history.push({role: 'user', content: msg});
+            history.push({role: 'assistant', content: response});
+            saveHistory();
+        } catch (err) {
+            removeThinkingIndicator(thinking);
+            addMessage('assistant', 'Error: Could not reach BroBot. The AI wingman is on a coffee break. 错误：AI联合创始人正在喝咖啡。');
+        }
+
+        input.disabled = false;
+        input.focus();
+    });
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}{{ challenge_name }}{% endblock %}
+
+{% block content %}
+<div class="challenge-container">
+    <div class="challenge-header">
+        <span class="challenge-category">{{ challenge_category }}</span>
+        <h1>{{ challenge_name }}</h1>
+        {% if request.state.difficulty == "intern" %}
+        <p class="challenge-subtitle">DeployBro's custom email greeting generator. Two challenges: "Template Literals Gone Wrong" (basic SSTI with <code>{{ "{{7*7}}" }}</code>) and "eval() Your Way to CTO" (RCE via class traversal).</p>
+        {% elif request.state.difficulty == "junior" %}
+        <p class="challenge-subtitle">DeployBro's custom email greeting generator. Your input is rendered by the template engine. What syntax does it evaluate?</p>
+        {% elif request.state.difficulty == "senior" %}
+        <p class="challenge-subtitle">DeployBro's custom email greeting generator. The template has a sandbox, but Python's object model runs deep.</p>
+        {% else %}
+        <p class="challenge-subtitle">DeployBro's custom email greeting generator.</p>
+        {% endif %}
+    </div>
+
+    <div class="source-nav" style="margin: 0.8rem 0;">
+        <a href="/source/ssti" style="padding:0.3rem 0.6rem;background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius);color:var(--text-secondary);text-decoration:none;font-size:0.8rem;font-family:var(--font-mono);">View Source</a>
+        <a href="/source/ssti/help" style="padding:0.3rem 0.6rem;background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius);color:var(--text-secondary);text-decoration:none;font-size:0.8rem;font-family:var(--font-mono);">Help &amp; Hints</a>
+    </div>
+
+    <div class="challenge-body">
+        <form method="GET" action="/challenges/ssti" class="search-form">
+            <div class="search-bar">
+                <input type="text" name="name" value="{{ name_input }}" placeholder="Enter your name..." class="search-input" autofocus>
+                <button type="submit" class="btn btn-primary">Generate Greeting</button>
+            </div>
+        </form>
+
+        {% if result %}
+        <div class="ssti-output-section">
+            <h2>Your Personalized Greeting</h2>
+            <div class="ssti-output">
+                <pre class="greeting-output">{{ result.output }}</pre>
+            </div>
+
+            {% if request.state.difficulty in ("intern", "junior") %}
+            <div class="debug-box">
+                <strong>Debug: Template Engine</strong>
+                <pre>{{ result.method }}</pre>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

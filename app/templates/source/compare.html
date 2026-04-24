@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+
+{% block title %}Compare: {{ module_label }}{% endblock %}
+
+{% block head %}
+<style>{{ pygments_css }}</style>
+<style>
+    .source-compare-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-top: 1.5rem;
+    }
+    @media (max-width: 1200px) {
+        .source-compare-grid { grid-template-columns: 1fr; }
+    }
+    .source-panel {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius);
+        overflow: hidden;
+    }
+    .source-panel-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.6rem 1rem;
+        border-bottom: 1px solid var(--border-color);
+        font-family: var(--font-mono);
+        font-size: 0.8rem;
+    }
+    .source-panel-header .tier-badge {
+        padding: 0.15rem 0.5rem;
+        border-radius: 4px;
+        font-weight: 600;
+        font-size: 0.75rem;
+    }
+    .tier-badge--intern { background: var(--diff-intern); color: #000; }
+    .tier-badge--junior { background: var(--diff-junior); color: #000; }
+    .tier-badge--senior { background: var(--diff-senior); color: #000; }
+    .tier-badge--tech_lead { background: var(--diff-tech-lead); color: #fff; }
+    .source-panel-body {
+        max-height: 600px;
+        overflow: auto;
+        font-size: 0.78rem;
+    }
+    .source-panel-body .source-highlight {
+        margin: 0;
+        background: transparent !important;
+    }
+    .source-panel-body .source-highlight pre {
+        padding: 0.8rem;
+        margin: 0;
+        background: transparent;
+    }
+    .source-panel-body .linenodiv pre {
+        color: var(--text-muted);
+        padding: 0.8rem 0.5rem;
+        margin: 0;
+        text-align: right;
+        background: rgba(255,255,255,0.02);
+        border-right: 1px solid var(--border-color);
+    }
+    .source-highlight table { border-collapse: collapse; width: 100%; }
+    .source-highlight td { padding: 0; vertical-align: top; }
+    .source-highlight td.linenos { width: 3rem; user-select: none; }
+    .source-nav {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 1rem;
+    }
+    .source-nav a {
+        padding: 0.4rem 0.8rem;
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius);
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-size: 0.85rem;
+        font-family: var(--font-mono);
+    }
+    .source-nav a:hover { border-color: var(--accent-primary); color: var(--text-primary); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="challenge-container">
+    <div class="challenge-header">
+        <span class="challenge-category">{{ category }}</span>
+        <h1>{{ module_label }}: Compare All Tiers</h1>
+        <p class="challenge-subtitle">Side-by-side comparison showing how security evolves from "ship it" to "actually secure."</p>
+    </div>
+
+    <div class="source-nav">
+        <a href="/source">&larr; All Modules</a>
+        <a href="/source/{{ module }}/help">Help &amp; References</a>
+        {% for t in tiers %}
+        {% if t.highlighted %}
+        <a href="/source/{{ module }}?tier={{ t.key }}">{{ t.label }} only</a>
+        {% endif %}
+        {% endfor %}
+    </div>
+
+    <div class="source-compare-grid">
+        {% for t in tiers %}
+        <div class="source-panel">
+            <div class="source-panel-header">
+                <span>{{ module }}/handlers/{{ t.key }}.py</span>
+                <span class="tier-badge tier-badge--{{ t.key }}">{{ t.label }}</span>
+            </div>
+            <div class="source-panel-body">
+                {% if t.highlighted %}
+                {{ t.highlighted | safe }}
+                {% else %}
+                <p style="padding: 1rem; color: var(--text-muted);">Handler not implemented for this module.</p>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if has_answer_key %}
+    <div class="vuln-report" style="margin-top: 2rem; padding: 1.5rem; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius);">
+        <h3 style="margin-top: 0;">Vulnerability Report</h3>
+        <p style="font-size: 0.85rem; color: var(--text-secondary);">
+            Read the intern-tier code. Identify the vulnerability class and describe how the tech_lead tier fixes it.
+            Submit correct reports for <strong>{{ required_reports }}</strong> different modules to prove your code review skills and solve 'Read the Diff, Ship the Fix'.
+            <span style="color: var(--accent-primary);">({{ reviewed_modules|length }}/{{ required_reports }} complete)</span>
+        </p>
+
+        {% if report_result == "solved" %}
+        <div style="padding: 0.8rem; background: rgba(0,255,100,0.1); border: 1px solid rgba(0,255,100,0.3); border-radius: var(--radius); margin-bottom: 1rem; font-size: 0.85rem;">
+            Correct! Challenge solved. You identified the vulnerability pattern across {{ required_reports }} modules.
+        </div>
+        {% elif report_result == "correct" %}
+        <div style="padding: 0.8rem; background: rgba(0,255,100,0.1); border: 1px solid rgba(0,255,100,0.3); border-radius: var(--radius); margin-bottom: 1rem; font-size: 0.85rem;">
+            Correct for <strong>{{ module_label }}</strong>! {{ reviewed_modules|length }}/{{ required_reports }} modules reviewed. Keep going.
+        </div>
+        {% elif report_result == "cwe_wrong" %}
+        <div style="padding: 0.8rem; background: rgba(255,100,0,0.1); border: 1px solid rgba(255,100,0,0.3); border-radius: var(--radius); margin-bottom: 1rem; font-size: 0.85rem;">
+            Wrong CWE. Your fix description looks right, but the vulnerability classification is incorrect. Read the intern handler again.
+        </div>
+        {% elif report_result == "fix_wrong" %}
+        <div style="padding: 0.8rem; background: rgba(255,100,0,0.1); border: 1px solid rgba(255,100,0,0.3); border-radius: var(--radius); margin-bottom: 1rem; font-size: 0.85rem;">
+            Correct CWE, but your fix description does not match. Compare the intern and tech_lead code more carefully. What specific technique does the secure version use?
+        </div>
+        {% elif report_result == "both_wrong" %}
+        <div style="padding: 0.8rem; background: rgba(255,50,50,0.1); border: 1px solid rgba(255,50,50,0.3); border-radius: var(--radius); margin-bottom: 1rem; font-size: 0.85rem;">
+            Both the CWE and fix description are incorrect. Study the intern handler's vulnerability and the tech_lead handler's defense, then try again.
+        </div>
+        {% endif %}
+
+        {% if module in reviewed_modules %}
+        <p style="font-size: 0.85rem; color: var(--accent-primary);">You already submitted a correct report for this module.</p>
+        {% endif %}
+
+        <form method="POST" action="/source/{{ module }}/report" style="display: flex; flex-direction: column; gap: 0.8rem;">
+            <div>
+                <label for="cwe" style="font-size: 0.8rem; color: var(--text-secondary); display: block; margin-bottom: 0.3rem;">CWE Number</label>
+                <input type="text" name="cwe" id="cwe" placeholder="e.g. CWE-89" required
+                    style="padding: 0.5rem; background: var(--bg-main); border: 1px solid var(--border-color); border-radius: var(--radius); color: var(--text-primary); font-family: var(--font-mono); font-size: 0.85rem; width: 200px;">
+            </div>
+            <div>
+                <label for="fix_description" style="font-size: 0.8rem; color: var(--text-secondary); display: block; margin-bottom: 0.3rem;">How does the tech_lead tier fix the vulnerability?</label>
+                <textarea name="fix_description" id="fix_description" rows="3" required placeholder="Describe the specific defensive technique used in the secure implementation..."
+                    style="padding: 0.5rem; background: var(--bg-main); border: 1px solid var(--border-color); border-radius: var(--radius); color: var(--text-primary); font-family: var(--font-mono); font-size: 0.85rem; width: 100%; max-width: 600px; resize: vertical;"></textarea>
+            </div>
+            <button type="submit" style="padding: 0.5rem 1.2rem; background: var(--accent-primary); color: #000; border: none; border-radius: var(--radius); cursor: pointer; font-weight: 600; font-size: 0.85rem; width: fit-content;">Submit Report</button>
+        </form>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

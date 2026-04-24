@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}{{ challenge_name }}{% endblock %}
+
+{% block content %}
+<div class="challenge-container">
+    <div class="challenge-header">
+        <span class="challenge-category">{{ challenge_category }}</span>
+        <h1>{{ challenge_name }}</h1>
+        {% if request.state.difficulty == "intern" %}
+        <p class="challenge-subtitle">DeployBro uses sequential integer IDs everywhere. It's just simpler bro. Three challenges: "Other People's OKRs" (view profiles at <code>/challenges/idor/profile/&lt;id&gt;</code>), "Peek at the Cap Table" (access orders at <code>/challenges/idor/order/&lt;id&gt;</code>), and "Promotion Without the Standup" (access the admin panel at <code>/admin</code> as a non-admin user).</p>
+        {% elif request.state.difficulty == "junior" %}
+        <p class="challenge-subtitle">Three access control challenges are hidden in this page. Can you access resources that don't belong to you?</p>
+        {% elif request.state.difficulty == "senior" %}
+        <p class="challenge-subtitle">Broken access control challenges. How does the application determine what you're allowed to see?</p>
+        {% else %}
+        <p class="challenge-subtitle">Access control challenges.</p>
+        {% endif %}
+    </div>
+
+    <div class="source-nav" style="margin: 0.8rem 0;">
+        <a href="/source/idor" style="padding:0.3rem 0.6rem;background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius);color:var(--text-secondary);text-decoration:none;font-size:0.8rem;font-family:var(--font-mono);">View Source</a>
+        <a href="/source/idor/help" style="padding:0.3rem 0.6rem;background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius);color:var(--text-secondary);text-decoration:none;font-size:0.8rem;font-family:var(--font-mono);">Help &amp; Hints</a>
+    </div>
+
+    <div class="challenge-body">
+        {% if not current_user %}
+        <div class="error-box" style="margin-bottom:1rem;">
+            <strong>You need to <a href="/login">log in</a> first.</strong> IDOR challenges require you to be authenticated as one user and then access another user's resources.
+        </div>
+        {% endif %}
+
+        {% if show_user_directory %}
+        <div class="idor-nav">
+            <h2>User Directory</h2>
+            <p class="text-muted">Click a user to view their profile. You are {% if current_user %}logged in as <strong>{{ current_user.username }}</strong> (ID: {{ current_user.id }}){% else %}not logged in{% endif %}.</p>
+            <div class="user-list">
+                {% for u in users %}
+                <a href="/challenges/idor/profile/{{ u.id }}" class="user-link {% if target_id == u.id %}active{% endif %}">
+                    <span class="user-id">#{{ u.id }}</span>
+                    <span class="user-name">{{ u.username }}</span>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        {% else %}
+        <div class="idor-nav">
+            <p class="text-muted">You are {% if current_user %}logged in as <strong>{{ current_user.username }}</strong> (ID: {{ current_user.id }}){% else %}not logged in{% endif %}.</p>
+        </div>
+        {% endif %}
+
+        {% if profile %}
+        <div class="profile-section">
+            {% if profile.error is defined %}
+            <div class="error-box">
+                <strong>{{ profile.error }}</strong>
+            </div>
+            {% else %}
+            <h2>Profile: {{ profile.username }}</h2>
+            <table class="status-table">
+                {% for key, value in profile.items() %}
+                <tr>
+                    <th>{{ key }}</th>
+                    <td>
+                        {% if key in ("api_key", "password_hash") %}
+                        <span class="sensitive-field">{{ value }}</span>
+                        {% else %}
+                        {{ value }}
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        {% if order %}
+        <div class="profile-section">
+            <h2>Order #{{ order.id }}</h2>
+            <table class="status-table">
+                {% for key, value in order.items() %}
+                <tr>
+                    <th>{{ key }}</th>
+                    <td>
+                        {% if key in ("shipping_address", "credit_card_last4") %}
+                        <span class="sensitive-field">{{ value }}</span>
+                        {% else %}
+                        {{ value }}
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

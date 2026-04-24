@@ -1,0 +1,1087 @@
+/* Damn Vulnerable Startup — "Toxic Hustle" Rave Brutalism Theme
+   All selectors scoped under [data-theme="toxic"].
+   Loaded alongside style.css; only activates when the attribute is present. */
+
+/* ── Variable overrides ─────────────────────────────────────── */
+
+[data-theme="toxic"] {
+    --bg-primary: #050505;
+    --bg-secondary: #0d0d0d;
+    --bg-card: #111111;
+    --bg-card-hover: #1a1a1a;
+    --accent-primary: #CCFF00;
+    --accent-secondary: #FF2D6F;
+    --accent-tertiary: #00D4FF;
+    --accent-glow: rgba(204, 255, 0, 0.25);
+    --accent-primary-rgb: 204, 255, 0;
+    --accent-secondary-rgb: 255, 45, 111;
+    --accent-tertiary-rgb: 0, 212, 255;
+    --text-primary: #f0f0f0;
+    --text-secondary: #b0b0b0;
+    --text-muted: #666666;
+    --border-color: #1f1f1f;
+    --font-display: 'Syne', sans-serif;
+    --font-sans: 'Outfit', sans-serif;
+    --diff-intern: #CCFF00;
+    --diff-junior: #FFB800;
+    --diff-senior: #FF2D6F;
+    --diff-tech-lead: #00D4FF;
+    --grain-opacity: 0.035;
+    --success: #CCFF00;
+    --danger: #FF2D6F;
+    --warning: #FFB800;
+    --info: #00D4FF;
+}
+
+/* ── Visibility toggles ─────────────────────────────────────── */
+
+.toxic-only {
+    display: none !important;
+}
+
+[data-theme="toxic"] .classic-only {
+    display: none !important;
+}
+
+[data-theme="toxic"] .toxic-only {
+    display: block !important;
+}
+
+[data-theme="toxic"] .toxic-only.toxic-flex {
+    display: flex !important;
+}
+
+[data-theme="toxic"] .toxic-only.toxic-grid {
+    display: grid !important;
+}
+
+[data-theme="toxic"] .toxic-only.toxic-inline {
+    display: inline-block !important;
+}
+
+/* Hide corpo content in toxic mode */
+[data-theme="toxic"] .corpo-only {
+    display: none !important;
+}
+
+/* ── Film grain overlay ─────────────────────────────────────── */
+
+[data-theme="toxic"] body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    pointer-events: none;
+    opacity: var(--grain-opacity);
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 256px 256px;
+}
+
+/* ── Background blob overrides ──────────────────────────────── */
+
+[data-theme="toxic"] .vibe-blob--1 {
+    background: radial-gradient(circle, #CCFF00 0%, transparent 70%);
+}
+
+[data-theme="toxic"] .vibe-blob--2 {
+    background: radial-gradient(circle, #FF2D6F 0%, transparent 70%);
+}
+
+[data-theme="toxic"] .vibe-blob--3,
+[data-theme="toxic"] .vibe-blob--4 {
+    display: none;
+}
+
+[data-theme="toxic"] .vibe-bg-scan {
+    display: none;
+}
+
+[data-theme="toxic"] .vibe-bg-grid {
+    background-image: radial-gradient(circle, rgba(204, 255, 0, 0.06) 1px, transparent 1px);
+}
+
+/* ── Typography ─────────────────────────────────────────────── */
+
+[data-theme="toxic"] h1,
+[data-theme="toxic"] h2,
+[data-theme="toxic"] h3 {
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+}
+
+[data-theme="toxic"] body {
+    font-family: var(--font-sans);
+}
+
+[data-theme="toxic"] code,
+[data-theme="toxic"] pre,
+[data-theme="toxic"] .font-mono {
+    font-family: 'JetBrains Mono', monospace;
+}
+
+/* ── Navbar ──────────────────────────────────────────────────── */
+
+[data-theme="toxic"] .navbar {
+    border-bottom: 1px solid rgba(204, 255, 0, 0.15);
+    box-shadow: 0 1px 20px rgba(204, 255, 0, 0.05);
+}
+
+[data-theme="toxic"] .brand-text {
+    color: var(--accent-primary);
+}
+
+[data-theme="toxic"] .nav-brand-link:hover .brand-text {
+    text-shadow: 0 0 12px rgba(204, 255, 0, 0.4);
+}
+
+[data-theme="toxic"] .brand-tag {
+    background: var(--accent-primary);
+    color: #000;
+}
+
+[data-theme="toxic"] .nav-links a:hover {
+    color: var(--accent-primary);
+}
+
+[data-theme="toxic"] .nav-user {
+    color: var(--accent-primary) !important;
+}
+
+[data-theme="toxic"] .nav-logout:hover {
+    color: var(--accent-secondary);
+}
+
+/* ── Theme toggle button ────────────────────────────────────── */
+
+.theme-toggle {
+    display: flex;
+    align-items: center;
+    background: var(--bg-card, #1a1a1a);
+    border: 1px solid var(--border-color, #262626);
+    border-radius: 999px;
+    padding: 2px;
+    cursor: pointer;
+    gap: 0;
+    font-family: var(--font-mono, monospace);
+    transition: border-color 0.2s;
+}
+
+.theme-toggle:hover {
+    border-color: var(--accent-primary);
+}
+
+.theme-toggle-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 999px;
+    letter-spacing: 0.5px;
+    transition: all 0.2s;
+    color: var(--text-muted, #737373);
+    user-select: none;
+}
+
+.theme-toggle-label.active {
+    color: #000;
+    background: var(--accent-primary, #8b5cf6);
+}
+
+[data-theme="toxic"] .theme-toggle-label.active {
+    background: var(--accent-primary);
+    color: #000;
+}
+
+/* ── Buttons ────────────────────────────────────────────────── */
+
+[data-theme="toxic"] .btn-primary {
+    background: var(--accent-primary);
+    color: #000;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-family: var(--font-display);
+}
+
+[data-theme="toxic"] .btn-primary:hover {
+    background: var(--accent-primary);
+    color: #000;
+    transform: scale(1.02);
+    box-shadow: 0 0 24px rgba(204, 255, 0, 0.3);
+}
+
+[data-theme="toxic"] .btn-secondary {
+    border-color: var(--accent-primary);
+    color: var(--accent-primary);
+    background: transparent;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-family: var(--font-display);
+}
+
+[data-theme="toxic"] .btn-secondary:hover {
+    background: rgba(204, 255, 0, 0.08);
+    color: var(--accent-primary);
+}
+
+[data-theme="toxic"] .btn-danger {
+    background: var(--accent-secondary);
+}
+
+[data-theme="toxic"] .btn-danger:hover {
+    background: #e0204f;
+}
+
+/* ── Cards: neon glow on hover ──────────────────────────────── */
+
+[data-theme="toxic"] .feature-card:hover,
+[data-theme="toxic"] .result-card:hover,
+[data-theme="toxic"] .llm-challenge-card:hover,
+[data-theme="toxic"] .challenge-item:hover,
+[data-theme="toxic"] .trust-badge:hover,
+[data-theme="toxic"] .testimonial:hover,
+[data-theme="toxic"] .user-link:hover,
+[data-theme="toxic"] .misconfig-link:hover {
+    box-shadow: 0 0 20px rgba(204, 255, 0, 0.1);
+    border-color: var(--accent-primary);
+}
+
+[data-theme="toxic"] .feature-card {
+    border-left: 3px solid var(--accent-primary);
+}
+
+/* ── Forms: lime focus ring ─────────────────────────────────── */
+
+[data-theme="toxic"] .form-group input:focus,
+[data-theme="toxic"] .search-input:focus,
+[data-theme="toxic"] .chat-input:focus,
+[data-theme="toxic"] textarea:focus,
+[data-theme="toxic"] select:focus,
+[data-theme="toxic"] .brobot-panel-input input:focus,
+[data-theme="toxic"] .brobot-challenge-select:focus {
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px rgba(204, 255, 0, 0.2);
+}
+
+/* ── Challenge pages ────────────────────────────────────────── */
+
+[data-theme="toxic"] .challenge-category {
+    background: rgba(204, 255, 0, 0.1);
+    color: var(--accent-primary);
+}
+
+[data-theme="toxic"] .challenge-item.solved {
+    border-left-color: var(--accent-primary);
+}
+
+[data-theme="toxic"] .challenge-item.solved .solve-indicator {
+    color: var(--accent-primary);
+}
+
+/* ── Scoreboard ─────────────────────────────────────────────── */
+
+[data-theme="toxic"] .progress-bar {
+    background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+}
+
+[data-theme="toxic"] .score-number {
+    color: var(--accent-primary);
+}
+
+/* ── Auth pages ─────────────────────────────────────────────── */
+
+[data-theme="toxic"] .auth-card {
+    border-color: rgba(204, 255, 0, 0.1);
+}
+
+[data-theme="toxic"] .auth-error {
+    background: rgba(255, 45, 111, 0.1);
+    border-color: rgba(255, 45, 111, 0.3);
+    color: var(--accent-secondary);
+}
+
+[data-theme="toxic"] .auth-success {
+    background: rgba(204, 255, 0, 0.1);
+    border-color: rgba(204, 255, 0, 0.3);
+    color: var(--accent-primary);
+}
+
+[data-theme="toxic"] .auth-hint code {
+    color: var(--accent-primary);
+}
+
+/* ── Debug and error boxes ──────────────────────────────────── */
+
+[data-theme="toxic"] .debug-box {
+    background: rgba(204, 255, 0, 0.03);
+    border-color: rgba(204, 255, 0, 0.2);
+}
+
+[data-theme="toxic"] .debug-box strong {
+    color: var(--accent-primary);
+}
+
+[data-theme="toxic"] .error-box {
+    background: rgba(255, 45, 111, 0.05);
+    border-color: rgba(255, 45, 111, 0.3);
+}
+
+[data-theme="toxic"] .error-box strong {
+    color: var(--accent-secondary);
+}
+
+[data-theme="toxic"] .success-box {
+    background: rgba(204, 255, 0, 0.05);
+    border-color: rgba(204, 255, 0, 0.3);
+}
+
+/* ── Search ─────────────────────────────────────────────────── */
+
+[data-theme="toxic"] .search-btn,
+[data-theme="toxic"] .search-form .btn {
+    background: var(--accent-primary);
+    color: #000;
+}
+
+/* ── Chat UI ────────────────────────────────────────────────── */
+
+[data-theme="toxic"] .chat-message.user .chat-bubble {
+    background: rgba(204, 255, 0, 0.12);
+    border-color: rgba(204, 255, 0, 0.25);
+}
+
+[data-theme="toxic"] .chat-container {
+    border-color: rgba(204, 255, 0, 0.1);
+}
+
+/* ── Notification toast ─────────────────────────────────────── */
+
+[data-theme="toxic"] .notification-toast {
+    border-color: var(--accent-primary);
+    box-shadow: 0 4px 20px rgba(204, 255, 0, 0.15);
+}
+
+[data-theme="toxic"] .notification-toast .toast-title {
+    color: var(--accent-primary);
+}
+
+[data-theme="toxic"] .notification-toast .toast-flag {
+    color: var(--accent-primary);
+}
+
+/* ── Difficulty badges ──────────────────────────────────────── */
+
+[data-theme="toxic"] .difficulty-intern {
+    background: rgba(204, 255, 0, 0.15);
+    color: var(--diff-intern);
+}
+
+[data-theme="toxic"] .difficulty-junior {
+    background: rgba(255, 184, 0, 0.15);
+    color: var(--diff-junior);
+}
+
+[data-theme="toxic"] .difficulty-senior {
+    background: rgba(255, 45, 111, 0.15);
+    color: var(--diff-senior);
+}
+
+[data-theme="toxic"] .difficulty-tech_lead {
+    background: rgba(0, 212, 255, 0.15);
+    color: var(--diff-tech-lead);
+}
+
+[data-theme="toxic"] .difficulty-stars-1 { color: var(--diff-intern); }
+[data-theme="toxic"] .difficulty-stars-2 { color: var(--diff-junior); }
+[data-theme="toxic"] .difficulty-stars-3 { color: var(--diff-senior); }
+[data-theme="toxic"] .difficulty-stars-4 { color: var(--diff-tech-lead); }
+
+/* ── Difficulty option cards ────────────────────────────────── */
+
+[data-theme="toxic"] .difficulty-option:hover {
+    border-color: var(--accent-primary);
+}
+
+[data-theme="toxic"] .difficulty-option.selected {
+    border-color: var(--accent-primary);
+    background: rgba(204, 255, 0, 0.05);
+}
+
+[data-theme="toxic"] .difficulty-option input[type="radio"] {
+    accent-color: var(--accent-primary);
+}
+
+/* ── Source viewer ──────────────────────────────────────────── */
+
+[data-theme="toxic"] .source-container {
+    border-color: rgba(204, 255, 0, 0.1);
+}
+
+[data-theme="toxic"] .source-header {
+    background: rgba(204, 255, 0, 0.03);
+}
+
+[data-theme="toxic"] .source-tab.active {
+    background: var(--accent-primary);
+    color: #000;
+}
+
+/* ── Misconfig ──────────────────────────────────────────────── */
+
+[data-theme="toxic"] .misconfig-method {
+    background: rgba(204, 255, 0, 0.15);
+    color: var(--accent-primary);
+}
+
+/* ── Upload ─────────────────────────────────────────────────── */
+
+[data-theme="toxic"] .upload-label:hover {
+    border-color: var(--accent-primary);
+}
+
+[data-theme="toxic"] .upload-result.success {
+    background: rgba(204, 255, 0, 0.05);
+    border-color: rgba(204, 255, 0, 0.3);
+}
+
+[data-theme="toxic"] .upload-result.error {
+    background: rgba(255, 45, 111, 0.05);
+    border-color: rgba(255, 45, 111, 0.3);
+}
+
+/* ── IDOR ───────────────────────────────────────────────────── */
+
+[data-theme="toxic"] .user-link.active {
+    border-color: var(--accent-primary);
+    background: rgba(204, 255, 0, 0.1);
+}
+
+[data-theme="toxic"] .sensitive-field {
+    color: var(--accent-secondary);
+}
+
+/* ── Filter tags ────────────────────────────────────────────── */
+
+[data-theme="toxic"] .filter-tag:hover {
+    border-color: var(--accent-primary);
+    color: var(--accent-primary);
+}
+
+[data-theme="toxic"] .filter-tag.active {
+    background: var(--accent-primary);
+    border-color: var(--accent-primary);
+    color: #000;
+}
+
+[data-theme="toxic"] .filter-tag-sub.active {
+    background: var(--accent-secondary);
+    border-color: var(--accent-secondary);
+    color: #fff;
+}
+
+/* ── Badge fake ─────────────────────────────────────────────── */
+
+[data-theme="toxic"] .badge-fake {
+    background: rgba(204, 255, 0, 0.1);
+    color: var(--accent-primary);
+    border-color: rgba(204, 255, 0, 0.2);
+}
+
+/* ── Footer ─────────────────────────────────────────────────── */
+
+[data-theme="toxic"] .footer {
+    border-top-color: rgba(204, 255, 0, 0.1);
+}
+
+/* ── BroBot widget ──────────────────────────────────────────── */
+
+[data-theme="toxic"] .brobot-fab {
+    border-color: var(--accent-primary);
+    box-shadow: 0 4px 20px rgba(204, 255, 0, 0.2), 0 0 40px rgba(204, 255, 0, 0.1);
+}
+
+[data-theme="toxic"] .brobot-fab:hover {
+    box-shadow: 0 6px 28px rgba(204, 255, 0, 0.3), 0 0 60px rgba(204, 255, 0, 0.15);
+}
+
+[data-theme="toxic"] .brobot-panel {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 48px rgba(204, 255, 0, 0.08);
+}
+
+[data-theme="toxic"] .brobot-msg-user .brobot-msg-bubble {
+    background: rgba(204, 255, 0, 0.15);
+    color: var(--text-primary);
+}
+
+[data-theme="toxic"] .brobot-panel-input button {
+    background: var(--accent-primary);
+    color: #000;
+}
+
+[data-theme="toxic"] .brobot-panel-input button:hover {
+    background: #b8e600;
+}
+
+[data-theme="toxic"] .brobot-go-btn:hover,
+[data-theme="toxic"] .brobot-back-btn:hover {
+    color: var(--accent-primary);
+}
+
+/* ── Highlight gradient ─────────────────────────────────────── */
+
+[data-theme="toxic"] .highlight {
+    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* ── Links global ───────────────────────────────────────────── */
+
+[data-theme="toxic"] a {
+    color: var(--accent-primary);
+}
+
+[data-theme="toxic"] a:hover {
+    color: #b8e600;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   TOXIC-ONLY LANDING PAGE COMPONENTS
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── Hero ───────────────────────────────────────────────────── */
+
+[data-theme="toxic"] .toxic-hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 4rem 2rem;
+    position: relative;
+}
+
+[data-theme="toxic"] .hero-title {
+    font-family: var(--font-display);
+    font-size: clamp(3rem, 10vw, 7.5rem);
+    font-weight: 800;
+    line-height: 0.95;
+    text-transform: uppercase;
+    letter-spacing: -0.03em;
+    color: var(--text-primary);
+    margin-bottom: 1.5rem;
+}
+
+[data-theme="toxic"] .hero-title .hero-accent {
+    color: var(--accent-primary);
+    text-shadow: 0 0 40px rgba(204, 255, 0, 0.3);
+}
+
+[data-theme="toxic"] .toxic-glitch {
+    animation: glitch 4s infinite;
+}
+
+[data-theme="toxic"] .toxic-hero .hero-subtitle {
+    font-family: var(--font-sans);
+    font-size: clamp(1rem, 2.5vw, 1.35rem);
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+    text-transform: none;
+    letter-spacing: normal;
+}
+
+[data-theme="toxic"] .toxic-hero .hero-tagline {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: clamp(0.75rem, 1.5vw, 0.95rem);
+    color: var(--text-muted);
+    margin-bottom: 2.5rem;
+}
+
+[data-theme="toxic"] .toxic-hero .hero-cta {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 3rem;
+}
+
+/* Terminal mockup */
+[data-theme="toxic"] .terminal-mockup {
+    background: #0a0a0a;
+    border: 1px solid #222;
+    border-radius: 8px;
+    padding: 1.25rem 1.5rem;
+    max-width: 520px;
+    width: 100%;
+    text-align: left;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    line-height: 1.8;
+    color: var(--text-muted);
+    position: relative;
+    overflow: hidden;
+}
+
+[data-theme="toxic"] .terminal-mockup::before {
+    content: '● ● ●';
+    display: block;
+    font-size: 0.5rem;
+    letter-spacing: 4px;
+    color: #333;
+    margin-bottom: 0.75rem;
+}
+
+[data-theme="toxic"] .terminal-line {
+    opacity: 0;
+    animation: terminal-line 0.3s ease forwards;
+}
+
+[data-theme="toxic"] .terminal-line:nth-child(2) { animation-delay: 0.5s; }
+[data-theme="toxic"] .terminal-line:nth-child(3) { animation-delay: 1.0s; }
+[data-theme="toxic"] .terminal-line:nth-child(4) { animation-delay: 1.5s; }
+[data-theme="toxic"] .terminal-line:nth-child(5) { animation-delay: 2.0s; }
+[data-theme="toxic"] .terminal-line:nth-child(6) { animation-delay: 2.5s; }
+
+[data-theme="toxic"] .terminal-line .t-prompt {
+    color: var(--accent-primary);
+}
+
+[data-theme="toxic"] .terminal-line .t-cmd {
+    color: var(--text-primary);
+}
+
+[data-theme="toxic"] .terminal-line .t-ok {
+    color: var(--accent-primary);
+}
+
+[data-theme="toxic"] .terminal-line .t-warn {
+    color: var(--accent-secondary);
+}
+
+/* ── Ticker / Marquee ───────────────────────────────────────── */
+
+[data-theme="toxic"] .toxic-ticker {
+    width: 100%;
+    overflow: hidden;
+    padding: 1rem 0;
+    border-top: 1px solid rgba(204, 255, 0, 0.1);
+    border-bottom: 1px solid rgba(204, 255, 0, 0.1);
+    background: rgba(204, 255, 0, 0.02);
+}
+
+[data-theme="toxic"] .ticker-overflow {
+    overflow: hidden;
+    width: 100%;
+}
+
+[data-theme="toxic"] .ticker-track {
+    display: flex;
+    gap: 3rem;
+    white-space: nowrap;
+    animation: ticker-scroll 40s linear infinite;
+    width: max-content;
+}
+
+[data-theme="toxic"] .ticker-item {
+    font-family: var(--font-display);
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    flex-shrink: 0;
+}
+
+[data-theme="toxic"] .ticker-item .ticker-dot {
+    color: var(--accent-primary);
+    margin: 0 0.5rem;
+}
+
+/* ── Stats bar toxic ────────────────────────────────────────── */
+
+[data-theme="toxic"] .toxic-stats {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    padding: 2.5rem 2rem;
+    flex-wrap: wrap;
+    position: relative;
+}
+
+[data-theme="toxic"] .toxic-stat {
+    background: rgba(204, 255, 0, 0.03);
+    border: 1px solid rgba(204, 255, 0, 0.1);
+    border-radius: 12px;
+    padding: 1.5rem 2rem;
+    text-align: center;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    min-width: 160px;
+}
+
+[data-theme="toxic"] .toxic-stat .stat-number {
+    font-family: var(--font-display);
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--accent-primary);
+    display: block;
+}
+
+[data-theme="toxic"] .toxic-stat .stat-label {
+    font-family: var(--font-sans);
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+[data-theme="toxic"] .live-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: var(--font-display);
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--accent-primary);
+    margin-bottom: 1rem;
+}
+
+[data-theme="toxic"] .live-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent-primary);
+    animation: pulse-live 1.5s ease-in-out infinite;
+}
+
+/* ── Feature grid toxic ─────────────────────────────────────── */
+
+[data-theme="toxic"] .toxic-features {
+    padding: 4rem 2rem;
+}
+
+[data-theme="toxic"] .toxic-features h2 {
+    text-align: center;
+    margin-bottom: 2.5rem;
+    color: var(--text-primary);
+}
+
+[data-theme="toxic"] .toxic-feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.25rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+[data-theme="toxic"] .toxic-feature-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-left: 3px solid var(--accent-primary);
+    border-radius: 8px;
+    padding: 1.75rem;
+    transition: all 0.25s ease;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeUp 0.5s ease forwards;
+}
+
+[data-theme="toxic"] .toxic-feature-card:nth-child(1) { animation-delay: 0.05s; }
+[data-theme="toxic"] .toxic-feature-card:nth-child(2) { animation-delay: 0.10s; }
+[data-theme="toxic"] .toxic-feature-card:nth-child(3) { animation-delay: 0.15s; }
+[data-theme="toxic"] .toxic-feature-card:nth-child(4) { animation-delay: 0.20s; }
+[data-theme="toxic"] .toxic-feature-card:nth-child(5) { animation-delay: 0.25s; }
+[data-theme="toxic"] .toxic-feature-card:nth-child(6) { animation-delay: 0.30s; }
+[data-theme="toxic"] .toxic-feature-card:nth-child(7) { animation-delay: 0.35s; }
+[data-theme="toxic"] .toxic-feature-card:nth-child(8) { animation-delay: 0.40s; }
+[data-theme="toxic"] .toxic-feature-card:nth-child(9) { animation-delay: 0.45s; }
+
+[data-theme="toxic"] .toxic-feature-card:hover {
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 24px rgba(204, 255, 0, 0.08);
+    transform: translateY(-2px);
+}
+
+[data-theme="toxic"] .toxic-feature-card .feature-icon {
+    font-size: 1.75rem;
+    margin-bottom: 0.75rem;
+}
+
+[data-theme="toxic"] .toxic-feature-card h3 {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+}
+
+[data-theme="toxic"] .toxic-feature-card p {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+/* ── Testimonials ticker ────────────────────────────────────── */
+
+[data-theme="toxic"] .toxic-testimonials {
+    padding: 3rem 0;
+    overflow: hidden;
+}
+
+[data-theme="toxic"] .toxic-testimonials h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding: 0 2rem;
+}
+
+[data-theme="toxic"] .testimonial-ticker {
+    overflow: hidden;
+    width: 100%;
+}
+
+[data-theme="toxic"] .testimonial-track {
+    display: flex;
+    gap: 1.5rem;
+    animation: ticker-scroll 50s linear infinite;
+    width: max-content;
+}
+
+[data-theme="toxic"] .testimonial-track .testimonial {
+    min-width: 320px;
+    max-width: 360px;
+    flex-shrink: 0;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.5rem;
+}
+
+[data-theme="toxic"] .testimonial-track .testimonial:hover {
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 16px rgba(204, 255, 0, 0.08);
+}
+
+/* ── Trust section toxic ────────────────────────────────────── */
+
+[data-theme="toxic"] .toxic-trust {
+    padding: 4rem 2rem;
+    text-align: center;
+    position: relative;
+}
+
+[data-theme="toxic"] .section-skew {
+    position: relative;
+}
+
+[data-theme="toxic"] .section-skew::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: var(--bg-secondary);
+    transform: skewY(-2deg);
+    transform-origin: top left;
+    z-index: -1;
+}
+
+/* ── FOMO section toxic ─────────────────────────────────────── */
+
+[data-theme="toxic"] .toxic-fomo {
+    padding: 4rem 2rem;
+    text-align: center;
+}
+
+[data-theme="toxic"] .toxic-fomo h2 {
+    font-family: var(--font-display);
+    font-size: clamp(1.75rem, 5vw, 3rem);
+    margin-bottom: 1.5rem;
+    color: var(--text-primary);
+}
+
+[data-theme="toxic"] .countdown {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: clamp(2rem, 6vw, 4rem);
+    font-weight: 800;
+    color: var(--accent-secondary);
+    letter-spacing: 0.05em;
+    margin-bottom: 2rem;
+    text-shadow: 0 0 30px rgba(255, 45, 111, 0.3);
+}
+
+[data-theme="toxic"] .toxic-fomo .btn-primary {
+    font-size: 1.1rem;
+    padding: 1rem 2.5rem;
+    animation: pulse-live 2s ease-in-out infinite;
+}
+
+[data-theme="toxic"] .toxic-fomo-ticker {
+    margin-top: 3rem;
+    padding: 0.75rem 0;
+    border-top: 1px solid rgba(255, 45, 111, 0.15);
+    overflow: hidden;
+}
+
+[data-theme="toxic"] .toxic-fomo-ticker .ticker-track {
+    animation: ticker-scroll 60s linear infinite;
+}
+
+[data-theme="toxic"] .notif-history-clear {
+    font-family: var(--font-display);
+}
+
+[data-theme="toxic"] .toxic-fomo-ticker .ticker-item {
+    color: var(--accent-secondary);
+    opacity: 0.6;
+    font-size: 0.75rem;
+}
+
+/* ── Full bleed utility ─────────────────────────────────────── */
+
+[data-theme="toxic"] .full-bleed {
+    width: 100vw;
+    margin-left: calc(-50vw + 50%);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   ANIMATIONS (scoped)
+   ══════════════════════════════════════════════════════════════ */
+
+@keyframes glitch {
+    0%, 92%, 100% {
+        text-shadow: none;
+    }
+    93% {
+        text-shadow: -3px 0 #FF2D6F, 3px 0 #00D4FF;
+    }
+    94% {
+        text-shadow: 3px 0 #FF2D6F, -3px 0 #00D4FF;
+    }
+    95% {
+        text-shadow: -2px 0 #00D4FF, 2px 0 #FF2D6F;
+    }
+    96% {
+        text-shadow: none;
+    }
+}
+
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes ticker-scroll {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+@keyframes pulse-live {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.6;
+        transform: scale(1.15);
+    }
+}
+
+@keyframes terminal-line {
+    from {
+        opacity: 0;
+        transform: translateX(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ══════════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+    [data-theme="toxic"] .toxic-stats {
+        gap: 1rem;
+    }
+
+    [data-theme="toxic"] .toxic-stat {
+        min-width: 130px;
+        padding: 1rem 1.25rem;
+    }
+
+    [data-theme="toxic"] .toxic-stat .stat-number {
+        font-size: 1.75rem;
+    }
+
+    [data-theme="toxic"] .toxic-hero .hero-cta {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    [data-theme="toxic"] .terminal-mockup {
+        font-size: 0.7rem;
+    }
+
+    .theme-toggle {
+        order: -1;
+    }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   REDUCED MOTION
+   ══════════════════════════════════════════════════════════════ */
+
+@media (prefers-reduced-motion: reduce) {
+    [data-theme="toxic"] body::before {
+        display: none;
+    }
+
+    [data-theme="toxic"] .toxic-glitch {
+        animation: none;
+    }
+
+    [data-theme="toxic"] .ticker-track,
+    [data-theme="toxic"] .testimonial-track {
+        animation: none;
+    }
+
+    [data-theme="toxic"] .toxic-feature-card {
+        animation: none;
+        opacity: 1;
+        transform: none;
+    }
+
+    [data-theme="toxic"] .terminal-line {
+        animation: none;
+        opacity: 1;
+        transform: none;
+    }
+
+    [data-theme="toxic"] .live-dot {
+        animation: none;
+    }
+
+    [data-theme="toxic"] .toxic-fomo .btn-primary {
+        animation: none;
+    }
+
+    [data-theme="toxic"] .countdown {
+        text-shadow: none;
+    }
+}

@@ -1,0 +1,360 @@
+/* Terminal challenge styles
+   Works across OG, toxic, and corpo themes using CSS custom properties */
+
+.terminal-wrapper {
+    max-width: 960px;
+    margin: 0 auto;
+}
+
+.terminal-window {
+    background: #0a0a0a;
+    border: 1px solid var(--border-color, #333);
+    border-radius: var(--radius, 8px);
+    overflow: hidden;
+    font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+.terminal-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: #1a1a1a;
+    border-bottom: 1px solid #333;
+    user-select: none;
+}
+
+.terminal-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.terminal-dot.red { background: #ff5f57; }
+.terminal-dot.yellow { background: #febc2e; }
+.terminal-dot.green { background: #28c840; }
+
+.terminal-title {
+    flex: 1;
+    text-align: center;
+    color: #888;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+}
+
+.terminal-body {
+    padding: 16px;
+    height: 500px;
+    overflow-y: auto;
+    cursor: text;
+}
+
+.terminal-body::-webkit-scrollbar {
+    width: 6px;
+}
+
+.terminal-body::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.terminal-body::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 3px;
+}
+
+.terminal-line {
+    white-space: pre-wrap;
+    word-break: break-all;
+    color: #e0e0e0;
+    margin: 0;
+    padding: 0;
+}
+
+.terminal-line.command {
+    color: #4fc3f7;
+}
+
+.terminal-line.error {
+    color: #ef5350;
+}
+
+.terminal-line.success {
+    color: #66bb6a;
+}
+
+.terminal-line.system {
+    color: #888;
+    font-style: italic;
+}
+
+.terminal-line.motd {
+    color: var(--accent, #8b5cf6);
+}
+
+.terminal-input-line {
+    display: flex;
+    align-items: center;
+    gap: 0;
+}
+
+.terminal-prompt {
+    color: #66bb6a;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.terminal-prompt .user {
+    color: #4fc3f7;
+}
+
+.terminal-prompt .separator {
+    color: #888;
+}
+
+.terminal-prompt .path {
+    color: #ce93d8;
+}
+
+.terminal-prompt .dollar {
+    color: #66bb6a;
+}
+
+.terminal-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #e0e0e0;
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    padding: 0;
+    margin: 0;
+    caret-color: #66bb6a;
+}
+
+.terminal-input::placeholder {
+    color: #444;
+}
+
+/* Cursor blink for inactive state */
+.terminal-cursor {
+    display: inline-block;
+    width: 8px;
+    height: 1.2em;
+    background: #66bb6a;
+    animation: blink 1s step-end infinite;
+    vertical-align: text-bottom;
+}
+
+@keyframes blink {
+    50% { opacity: 0; }
+}
+
+/* Challenge info bar above terminal */
+.terminal-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.terminal-challenges {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.terminal-challenge-tag {
+    padding: 0.2rem 0.5rem;
+    background: rgba(139, 92, 246, 0.1);
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    border-radius: var(--radius, 4px);
+    font-size: 0.7rem;
+    font-family: var(--font-mono, monospace);
+    color: var(--text-secondary, #aaa);
+}
+
+/* Toxic theme overrides: match the front page terminal mockup */
+[data-theme="toxic"] .terminal-window {
+    background: #0a0a0a;
+    border: 1px solid #222;
+    box-shadow: none;
+}
+
+[data-theme="toxic"] .terminal-header {
+    background: #0a0a0a;
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+[data-theme="toxic"] .terminal-dot.red,
+[data-theme="toxic"] .terminal-dot.yellow,
+[data-theme="toxic"] .terminal-dot.green {
+    width: 8px;
+    height: 8px;
+    background: #333;
+}
+
+[data-theme="toxic"] .terminal-title {
+    color: #333;
+}
+
+[data-theme="toxic"] .terminal-body {
+    background: #0a0a0a;
+}
+
+[data-theme="toxic"] .terminal-line {
+    color: #888;
+}
+
+[data-theme="toxic"] .terminal-line.command {
+    color: #e0e0e0;
+}
+
+[data-theme="toxic"] .terminal-line.error {
+    color: #FF2D6F;
+}
+
+[data-theme="toxic"] .terminal-line.success {
+    color: #CCFF00;
+}
+
+[data-theme="toxic"] .terminal-line.system {
+    color: #555;
+}
+
+[data-theme="toxic"] .terminal-line.motd {
+    color: #CCFF00;
+}
+
+[data-theme="toxic"] .terminal-prompt .user {
+    color: #CCFF00;
+}
+
+[data-theme="toxic"] .terminal-prompt .separator {
+    color: #333;
+}
+
+[data-theme="toxic"] .terminal-prompt .path {
+    color: #FF2D6F;
+}
+
+[data-theme="toxic"] .terminal-prompt .dollar {
+    color: #CCFF00;
+}
+
+[data-theme="toxic"] .terminal-input {
+    color: #e0e0e0;
+    caret-color: #CCFF00;
+}
+
+[data-theme="toxic"] .terminal-input::placeholder {
+    color: #333;
+}
+
+[data-theme="toxic"] .terminal-cursor {
+    background: #CCFF00;
+}
+
+[data-theme="toxic"] .terminal-challenge-tag {
+    background: rgba(204, 255, 0, 0.1);
+    border-color: #222;
+    color: #888;
+}
+
+/* Corpo theme overrides: enterprise cloud console aesthetic */
+[data-theme="corpo"] .terminal-window {
+    background: #FAFBFC;
+    border: 1px solid #D1D9E0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="corpo"] .terminal-header {
+    background: #F6F8FA;
+    border-bottom: 1px solid #D1D9E0;
+}
+
+[data-theme="corpo"] .terminal-dot.red { background: #D1D9E0; }
+[data-theme="corpo"] .terminal-dot.yellow { background: #D1D9E0; }
+[data-theme="corpo"] .terminal-dot.green { background: #2563EB; }
+
+[data-theme="corpo"] .terminal-title {
+    color: #4a4a6a;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.03em;
+}
+
+[data-theme="corpo"] .terminal-body {
+    background: #1B2A4A;
+}
+
+[data-theme="corpo"] .terminal-body::-webkit-scrollbar-thumb {
+    background: #3b5998;
+}
+
+[data-theme="corpo"] .terminal-line {
+    color: #C9D1D9;
+}
+
+[data-theme="corpo"] .terminal-line.command {
+    color: #79C0FF;
+}
+
+[data-theme="corpo"] .terminal-line.error {
+    color: #F85149;
+}
+
+[data-theme="corpo"] .terminal-line.success {
+    color: #3FB950;
+}
+
+[data-theme="corpo"] .terminal-line.system {
+    color: #8B949E;
+}
+
+[data-theme="corpo"] .terminal-line.motd {
+    color: #58A6FF;
+}
+
+[data-theme="corpo"] .terminal-prompt .user {
+    color: #58A6FF;
+}
+
+[data-theme="corpo"] .terminal-prompt .separator {
+    color: #8B949E;
+}
+
+[data-theme="corpo"] .terminal-prompt .path {
+    color: #D2A8FF;
+}
+
+[data-theme="corpo"] .terminal-prompt .dollar {
+    color: #3FB950;
+}
+
+[data-theme="corpo"] .terminal-input {
+    color: #C9D1D9;
+    caret-color: #58A6FF;
+}
+
+[data-theme="corpo"] .terminal-input::placeholder {
+    color: #484F58;
+}
+
+[data-theme="corpo"] .terminal-cursor {
+    background: #58A6FF;
+}
+
+[data-theme="corpo"] .terminal-challenge-tag {
+    background: rgba(37, 99, 235, 0.06);
+    border-color: #D1D9E0;
+    color: var(--text-secondary);
+    font-family: 'Inter', sans-serif;
+}

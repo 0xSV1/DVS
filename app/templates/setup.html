@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block title %}Setup{% endblock %}
+
+{% block content %}
+<div class="setup-container">
+    <h1>System Setup</h1>
+    <p>Database status and reset controls for Damn Vulnerable Startup.</p>
+
+    <div class="setup-status">
+        <h2>Database Status</h2>
+        <table class="status-table">
+            <tr>
+                <td>Users</td>
+                <td>{{ user_count }}</td>
+            </tr>
+            <tr>
+                <td>Challenges</td>
+                <td>{{ challenge_count }}</td>
+            </tr>
+            <tr>
+                <td>Challenges Solved</td>
+                <td>{{ solved_count }}</td>
+            </tr>
+            <tr>
+                <td>Current Difficulty</td>
+                <td>{{ difficulty }}</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="setup-actions">
+        <h2>Reset Everything</h2>
+        <p>Drops all tables, recreates the schema, re-seeds default data, clears challenge progress, and logs you out. A clean slate.</p>
+        <button id="reset-btn" class="btn btn-danger" onclick="resetDatabase()">
+            Reset Everything
+        </button>
+        <div id="reset-status"></div>
+    </div>
+
+    <div class="setup-info" {% if request.state.difficulty|default('intern') != 'intern' %}style="display:none;"{% endif %}>
+        <h2>Default Credentials</h2>
+        <p>Because security is a post-Series B problem:</p>
+        <table class="status-table">
+            <tr>
+                <th>Username</th>
+                <th>Password</th>
+                <th>Role</th>
+            </tr>
+            <tr>
+                <td>admin</td>
+                <td>admin</td>
+                <td>admin</td>
+            </tr>
+            <tr>
+                <td>chad_shipper</td>
+                <td>password123</td>
+                <td>moderator</td>
+            </tr>
+            <tr>
+                <td>intern_jenny</td>
+                <td>jenny2026</td>
+                <td>user</td>
+            </tr>
+            <tr>
+                <td>test_user</td>
+                <td>test</td>
+                <td>user</td>
+            </tr>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+async function resetDatabase() {
+    const btn = document.getElementById('reset-btn');
+    const status = document.getElementById('reset-status');
+    btn.disabled = true;
+    btn.textContent = 'Resetting...';
+    status.textContent = '';
+
+    try {
+        const resp = await fetch('/api/setup/reset', { method: 'POST' });
+        const data = await resp.json();
+        // Clear BroBot chat history from localStorage
+        Object.keys(localStorage).forEach(function(key) {
+            if (key.startsWith('brobot_')) localStorage.removeItem(key);
+        });
+        // Clear persisted solve notification history and dedup state
+        try { localStorage.removeItem('dvs-solve-history'); } catch (e) {}
+        // Clear solve notification dedup so they show again after re-solving
+        try { sessionStorage.removeItem('dvs-shown-solves'); } catch (e) {}
+        status.textContent = (data.message || 'Database reset complete.') + ' Reloading...';
+        status.className = 'status-success';
+        // Reload to reflect logged-out state
+        setTimeout(function() { window.location.reload(); }, 1500);
+    } catch (err) {
+        status.textContent = 'Reset failed: ' + err.message;
+        status.className = 'status-error';
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Reset Everything';
+    }
+}
+</script>
+{% endblock %}

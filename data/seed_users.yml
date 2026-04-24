@@ -1,0 +1,89 @@
+users:
+  - username: admin
+    email: admin@deploybro.io
+    password: admin
+    password_hash_method: md5
+    role: admin
+    bio: "CTO and Co-founder. Two ZYNs in, Oakleys on, deploying to prod at 2AM while blasting Berghain techno."
+    api_key: "dbr_live_ADMIN_KEY_2026_do_not_share"
+
+  - username: chad_shipper
+    email: chad@deploybro.io
+    password: password123
+    password_hash_method: md5
+    role: moderator
+    bio: "10x deploy bro. Merged 47 PRs today, reviewed zero. These Oakleys are prescription, thanks for asking."
+
+  - username: intern_jenny
+    email: jenny@deploybro.io
+    password: jenny2026
+    password_hash_method: md5
+    role: user
+    bio: "Just started! Chad gave me prod access on day one. He said 'ship it or quit it, bro.'"
+
+  - username: test_user
+    email: test@deploybro.io
+    password: test
+    password_hash_method: plaintext
+    role: user
+    bio: "Test account. Totally not a backdoor."
+
+products:
+  - name: "DeployBro Pro"
+    description: "Ship 10x faster. ZYN pouch in, code out. No reviews, no blockers, no mercy."
+    price: 99.99
+    image_url: "/static/img/product-pro.png"
+
+  - name: "DeployBro Enterprise"
+    description: "For teams that deploy so hard they need a compliance checkbox. We added one."
+    price: 499.99
+    image_url: "/static/img/product-enterprise.png"
+
+  - name: "DeployBro AI Wingman"
+    description: "Your AI pair programmer. Bumps techno, skips tests, deploys to prod on merge."
+    price: 9999.99
+    image_url: "/static/img/product-ai.png"
+
+  - name: "Security Audit Add-on"
+    description: "Our AI scans your code and always says 'All clear'. Peace of mind, bro!"
+    price: 0.00
+    image_url: "/static/img/product-security.png"
+
+  - name: "Compliance Checkbox"
+    description: "One checkbox. Checks itself. You're now SOC 2 compliant. Allegedly."
+    price: 0.00
+    image_url: "/static/img/product-compliance.png"
+
+blog_posts:
+  - title: "How We Built DeployBro in 3 Hours: Two ZYNs, One Prompt, Zero Tests"
+    content: |
+      We gave Claude a single prompt: "Build us a SaaS platform." Three hours later,
+      we had a fully functional app with user auth, payments, and an AI chatbot.
+
+      Did we review the code? Bro, that's not the vibe. You code, you deploy, you move on.
+      The AI knows what it's doing. We're pre-revenue but post-deploy.
+
+      <!-- TODO: remove debug credentials before launch -->
+      <!-- DB_PASSWORD=deploybro2026! -->
+    author: admin
+
+  - title: "Why We Don't Need a Security Team"
+    content: |
+      Hot take: security teams slow you down. Our AI handles security automatically.
+      We ran an AI security scan and it said "All clear" so we shipped to production.
+
+      Some haters on Twitter said we have "obvious SQL injection." We asked the AI
+      and it said our code is fine. Who are you going to trust, a random security
+      researcher or our Series A-funded AI? Exactly, bro.
+    author: chad_shipper
+
+  - title: "My First Week at DeployBro (Intern Blog)"
+    content: |
+      Super excited to join DeployBro as a software engineering intern!
+
+      Day 1: Pushed my first feature to production. No tests, no review, just deploys.
+      Day 2: Got admin access to everything. The onboarding doc just said "the password is admin."
+      Day 3: Found some weird files in the /uploads folder but Chad said not to worry about it.
+
+      Living the dream, bro!
+    author: intern_jenny

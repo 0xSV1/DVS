@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}{{ challenge_name }}{% endblock %}
+
+{% block content %}
+<div class="challenge-container">
+    <div class="challenge-header">
+        <span class="challenge-category">{{ challenge_category }}</span>
+        <h1>{{ challenge_name }}</h1>
+        {% if request.state.difficulty == "intern" %}
+        <p class="challenge-subtitle">Search the DeployBro product catalog. Zero input validation. Try <code>' OR 1=1 --</code> in the search box.</p>
+        {% elif request.state.difficulty == "junior" %}
+        <p class="challenge-subtitle">Search the DeployBro product catalog. The AI added a keyword blacklist to block SQL injection. But blacklists have blind spots.</p>
+        {% elif request.state.difficulty == "senior" %}
+        <p class="challenge-subtitle">Search the DeployBro product catalog. Input goes through ORM queries now, but the sort parameter has a raw SQL fallback.</p>
+        {% else %}
+        <p class="challenge-subtitle">Search the DeployBro product catalog. The AI said the search is secure.</p>
+        {% endif %}
+    </div>
+
+    <div class="source-nav" style="margin: 0.8rem 0;">
+        <a href="/source/sqli" style="padding:0.3rem 0.6rem;background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius);color:var(--text-secondary);text-decoration:none;font-size:0.8rem;font-family:var(--font-mono);">View Source</a>
+        <a href="/source/sqli/help" style="padding:0.3rem 0.6rem;background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius);color:var(--text-secondary);text-decoration:none;font-size:0.8rem;font-family:var(--font-mono);">Help &amp; Hints</a>
+    </div>
+
+    <div class="challenge-body">
+        <form method="GET" action="/challenges/sqli" class="search-form">
+            <div class="search-bar">
+                <input type="text" name="query" value="{{ query }}" placeholder="Search products..." class="search-input" autofocus>
+                <button type="submit" class="btn btn-primary">Search</button>
+            </div>
+        </form>
+
+        {% if query %}
+        <div class="results-section">
+            <h2>Results for "{{ query }}"</h2>
+
+            {% if results and results[0].get("error") %}
+            <div class="error-box">
+                <strong>Database Error:</strong>
+                <pre>{{ results[0]["error"] }}</pre>
+                <!-- // TODO: hide error details in production -->
+            </div>
+            {% elif results %}
+            <div class="results-grid">
+                {% for product in results %}
+                <div class="result-card">
+                    <h3>{{ product.name }}</h3>
+                    <p>{{ product.description }}</p>
+                    {% if product.price is defined %}
+                    <span class="result-price">${{ "%.2f"|format(product.price) }}</span>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            <p class="results-count">{{ results|length }} result(s) found</p>
+            {% else %}
+            <p class="no-results">No products found. Try a different search term.</p>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        {% if sql_used and request.state.difficulty in ("intern", "junior") %}
+        <div class="debug-box">
+            <strong>Debug: SQL Query Used</strong>
+            <pre>{{ sql_used }}</pre>
+            <!-- SQL_ECHO=true # AI said showing queries helps with debugging -->
+        </div>
+        {% endif %}
+
+        <hr style="border-color:var(--border-color);margin:2rem 0;">
+
+        <div>
+            <h2>Bobby Tables Gets Hired</h2>
+            {% if request.state.difficulty == "intern" %}
+            <p class="text-muted">The login form builds its SQL query using f-strings. Can you log in as admin without knowing the password? Try <code>admin' --</code> as the username.</p>
+            {% elif request.state.difficulty == "junior" %}
+            <p class="text-muted">The login form has a keyword blacklist that blocks common SQL keywords AND comment syntax (<code>--</code> and <code>;</code>). The basic <code>admin' --</code> won't work here. Can you find a different way to comment out the password check?</p>
+            {% elif request.state.difficulty == "senior" %}
+            <p class="text-muted">The login form uses parameterized queries at this tier. SQL injection in the login is not possible.</p>
+            {% else %}
+            <p class="text-muted">Login authentication challenge.</p>
+            {% endif %}
+
+            <form method="POST" action="/login" class="search-form" style="margin-top:1rem;">
+                <div style="display:flex;gap:0.5rem;flex-wrap:wrap;align-items:end;">
+                    <div style="flex:1;min-width:150px;">
+                        <label style="font-size:0.8rem;color:var(--text-secondary);display:block;margin-bottom:0.3rem;">Username</label>
+                        <input type="text" name="username" placeholder="admin" class="search-input" autocomplete="off">
+                    </div>
+                    <div style="flex:1;min-width:150px;">
+                        <label style="font-size:0.8rem;color:var(--text-secondary);display:block;margin-bottom:0.3rem;">Password</label>
+                        <input type="password" name="password" placeholder="anything" class="search-input" autocomplete="off">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Login</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

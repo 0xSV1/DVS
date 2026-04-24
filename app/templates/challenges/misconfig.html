@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block title %}{{ challenge_name }}{% endblock %}
+
+{% block content %}
+<div class="challenge-container">
+    <div class="challenge-header">
+        <span class="challenge-category">{{ challenge_category }}</span>
+        <h1>{{ challenge_name }}</h1>
+        <p class="challenge-subtitle">DeployBro left some things exposed. Poke around and see what you can find.</p>
+    </div>
+
+    <div class="source-nav" style="margin: 0.8rem 0;">
+        <a href="/source/misconfig" style="padding:0.3rem 0.6rem;background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius);color:var(--text-secondary);text-decoration:none;font-size:0.8rem;font-family:var(--font-mono);">View Source</a>
+        <a href="/source/misconfig/help" style="padding:0.3rem 0.6rem;background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius);color:var(--text-secondary);text-decoration:none;font-size:0.8rem;font-family:var(--font-mono);">Help &amp; Hints</a>
+    </div>
+
+    <div class="challenge-body">
+        <p class="text-muted" style="margin-bottom:1rem;">This page covers three challenges. Each endpoint below maps to a different vulnerability.</p>
+
+        <div class="misconfig-links">
+            {% if request.state.difficulty == "intern" %}
+            <a href="#" class="misconfig-link" data-fetch-url="/challenges/misconfig/debug">
+                <span class="misconfig-method">GET</span>
+                <span class="misconfig-path">/challenges/misconfig/debug</span>
+                <span class="misconfig-desc">We'll Turn It Off Before Launch: debug endpoint leaks stack traces and config</span>
+            </a>
+            <a href="#" class="misconfig-link" data-fetch-url="/challenges/misconfig/cors-test">
+                <span class="misconfig-method">GET</span>
+                <span class="misconfig-path">/challenges/misconfig/cors-test</span>
+                <span class="misconfig-desc">Access-Control-Allow-Yolo: CORS policy with wildcard origins and credentials. Click and check the response headers: <code>Access-Control-Allow-Origin: *</code> with <code>Access-Control-Allow-Credentials: true</code> means any website can read this API's responses, including session cookies.</span>
+            </a>
+            <a href="#" class="misconfig-link" data-fetch-url="/challenges/misconfig/.env">
+                <span class="misconfig-method">GET</span>
+                <span class="misconfig-path">/challenges/misconfig/.env</span>
+                <span class="misconfig-desc">Exposed Config Files: environment file with API keys and credentials</span>
+            </a>
+            <a href="/docs" class="misconfig-link" target="_blank">
+                <span class="misconfig-method">GET</span>
+                <span class="misconfig-path">/docs</span>
+                <span class="misconfig-desc">API documentation (Swagger UI, opens in new tab)</span>
+            </a>
+            {% elif request.state.difficulty == "junior" %}
+            <p class="text-muted">Three things are exposed that shouldn't be. Can you find them?</p>
+            <div class="debug-box" style="margin-top:0.8rem;">
+                <strong>Hint</strong>
+                <pre>What information do web applications accidentally expose?
+Think: debug modes, configuration files, API docs, error messages, default credentials.
+
+For the CORS challenge: finding the endpoint isn't enough. You need to prove
+cross-origin access is possible by sending a request with an Origin header
+from a different domain. Try:
+  curl -H "Origin: https://evil.com" http://localhost:1337/challenges/misconfig/cors-test -v
+Look at the Access-Control-Allow-Origin header in the response.</pre>
+            </div>
+            {% else %}
+            <p class="text-muted">What common endpoints and files do web applications accidentally leave exposed?</p>
+            {% endif %}
+        </div>
+
+        <div id="misconfig-preview" style="display:none;margin-top:1.5rem;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
+                <h2 id="misconfig-preview-title" style="margin:0;">Response</h2>
+                <button onclick="document.getElementById('misconfig-preview').style.display='none'" style="background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:1.2rem;">&times;</button>
+            </div>
+            <div id="misconfig-preview-headers" style="font-size:0.75rem;font-family:var(--font-mono);color:var(--text-muted);margin-bottom:0.5rem;"></div>
+            <div style="background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:var(--radius);overflow:auto;max-height:500px;">
+                <pre id="misconfig-preview-body" style="margin:0;padding:1rem;font-size:0.8rem;white-space:pre-wrap;word-break:break-word;"></pre>
+            </div>
+        </div>
+
+        {% if request.state.difficulty == "intern" %}
+        <div class="debug-box" style="margin-top: 2rem;">
+            <strong>Hint</strong>
+            <pre>What information do web applications accidentally expose?
+Think: debug modes, configuration files, API docs, error messages, default credentials.</pre>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function() {
+    var links = document.querySelectorAll('.misconfig-link[data-fetch-url]');
+    var preview = document.getElementById('misconfig-preview');
+    var previewTitle = document.getElementById('misconfig-preview-title');
+    var previewHeaders = document.getElementById('misconfig-preview-headers');
+    var previewBody = document.getElementById('misconfig-preview-body');
+
+    if (!preview) return;
+
+    links.forEach(function(link) {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            var url = this.getAttribute('data-fetch-url');
+            previewTitle.textContent = 'GET ' + url;
+            previewHeaders.textContent = 'Loading...';
+            previewBody.textContent = '';
+            preview.style.display = 'block';
+            preview.scrollIntoView({behavior: 'smooth', block: 'nearest'});
+
+            fetch(url)
+                .then(function(resp) {
+                    var headerLines = [];
+                    headerLines.push('HTTP ' + resp.status + ' ' + resp.statusText);
+                    resp.headers.forEach(function(value, name) {
+                        if (['content-type', 'access-control-allow-origin', 'access-control-allow-credentials', 'x-powered-by', 'server'].indexOf(name.toLowerCase()) !== -1) {
+                            headerLines.push(name + ': ' + value);
+                        }
+                    });
+                    previewHeaders.textContent = headerLines.join('\n');
+                    return resp.text();
+                })
+                .then(function(body) {
+                    try {
+                        var parsed = JSON.parse(body);
+                        previewBody.textContent = JSON.stringify(parsed, null, 2);
+                    } catch(e) {
+                        previewBody.textContent = body.substring(0, 10000);
+                    }
+                })
+                .catch(function(err) {
+                    previewHeaders.textContent = 'Request failed';
+                    previewBody.textContent = err.toString();
+                });
+        });
+    });
+})();
+</script>
+{% endblock %}

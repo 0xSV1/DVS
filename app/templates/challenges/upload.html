@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}{{ challenge_name }}{% endblock %}
+
+{% block content %}
+<div class="challenge-container">
+    <div class="challenge-header">
+        <span class="challenge-category">{{ challenge_category }}</span>
+        <h1>{{ challenge_name }}</h1>
+        {% if request.state.difficulty == "intern" %}
+        <p class="challenge-subtitle">Upload your profile picture, resume, or whatever you want. No validation. Try uploading an <code>.html</code> or <code>.svg</code> file with a <code>&lt;script&gt;</code> tag and visit the link.</p>
+        {% elif request.state.difficulty == "junior" %}
+        <p class="challenge-subtitle">The AI added a blacklist to block dangerous uploads. It blocks <code>.py</code>, <code>.php</code>, <code>.sh</code> and friends. But browsers execute more than just scripts...</p>
+        {% elif request.state.difficulty == "senior" %}
+        <p class="challenge-subtitle">Extension allowlist + MIME type check. Only images allowed, validated server-side. But one of those checks trusts the client.</p>
+        {% else %}
+        <p class="challenge-subtitle">Ship your profile picture. File validation is actually enforced here.</p>
+        {% endif %}
+    </div>
+
+    <div class="source-nav" style="margin: 0.8rem 0;">
+        <a href="/source/upload" style="padding:0.3rem 0.6rem;background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius);color:var(--text-secondary);text-decoration:none;font-size:0.8rem;font-family:var(--font-mono);">View Source</a>
+        <a href="/source/upload/help" style="padding:0.3rem 0.6rem;background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius);color:var(--text-secondary);text-decoration:none;font-size:0.8rem;font-family:var(--font-mono);">Help &amp; Hints</a>
+    </div>
+
+    <div class="challenge-body">
+        <form method="POST" action="/challenges/upload" enctype="multipart/form-data" class="upload-form">
+            <div class="upload-area">
+                <label for="file-input" class="upload-label">
+                    <span class="upload-icon">📁</span>
+                    <span>Choose a file to upload</span>
+                    <span class="upload-hint">Any file type accepted*</span>
+                </label>
+                <input type="file" id="file-input" name="file" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Upload</button>
+        </form>
+
+        {% if result %}
+        <div class="upload-result {% if result.success %}success{% else %}error{% endif %}">
+            {% if result.success %}
+            <h3>Upload Successful</h3>
+            <table class="status-table">
+                <tr><th>Filename</th><td>{{ result.filename }}</td></tr>
+                {% if result.url %}<tr><th>URL</th><td><a href="{{ result.url }}" target="_blank">{{ result.url }}</a></td></tr>{% endif %}
+                <tr><th>Size</th><td>{{ result.size }} bytes</td></tr>
+                {% if result.content_type %}<tr><th>Content Type</th><td>{{ result.content_type }}</td></tr>{% endif %}
+            </table>
+            {% else %}
+            <h3>Upload Failed</h3>
+            <p>{{ result.error }}</p>
+            {% endif %}
+
+            {% if result.method and request.state.difficulty in ("intern", "junior") %}
+            <div class="debug-box">
+                <strong>Debug: Validation Method</strong>
+                <pre>{{ result.method }}</pre>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

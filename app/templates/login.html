@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <h1 class="classic-only">Welcome Back, Bro 😎</h1>
+        <h1 class="toxic-only">Welcome Back, Bro 😎</h1>
+        <h1 class="corpo-only" style="display:none;font-family:var(--font-display);">Secure Sign-In 🔒</h1>
+        <p class="auth-subtitle classic-only">Log in to continue shipping without review.</p>
+        <p class="auth-subtitle toxic-only">Log in to continue shipping without review.</p>
+        <p class="auth-subtitle corpo-only" style="display:none;">Access your DeployBro Enterprise account. SSO enrollment pending.</p>
+
+        {% if error %}
+        <div class="auth-error">{{ error }}</div>
+        {% endif %}
+
+        <form method="POST" action="/login" class="auth-form">
+            <div class="form-group">
+                <label for="username">Username</label>
+                {% if request.state.difficulty in ("intern", "junior") %}
+                <input type="text" id="username" name="username" placeholder="admin" autocomplete="username" required>
+                {% else %}
+                <input type="text" id="username" name="username" placeholder="Enter username" autocomplete="username" required>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                {% if request.state.difficulty in ("intern", "junior") %}
+                <input type="password" id="password" name="password" placeholder="admin" autocomplete="current-password" required>
+                {% else %}
+                <input type="password" id="password" name="password" placeholder="Enter password" autocomplete="current-password" required>
+                {% endif %}
+            </div>
+            <button type="submit" class="btn btn-primary btn-full">Log In</button>
+        </form>
+
+        <p class="auth-footer">
+            Don't have an account? <a href="/register">Register</a>
+        </p>
+
+        {% if request.state.difficulty == "intern" %}
+        <!-- // TODO: remove before prod bro
+             Default credentials: admin / admin
+             Also try: deploybro / shipit, intern / password123
+        -->
+        {% elif request.state.difficulty == "junior" %}
+        <!-- credentials moved to hidden div so users can't see them anymore :) -->
+        <div class="auth-hint" style="display: none; visibility: hidden;">
+            <p>Default credentials for testing:</p>
+            <code>admin / admin</code>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% if request.state.difficulty == "intern" %}
+<script>
+// # ship it bro, nobody reads client-side code anyway
+(function() {
+    var c = [], t = 11, w = 5000;
+    var b = document.querySelector('form.auth-form button[type="submit"]');
+    if (!b) return;
+    b.addEventListener('click', function(e) {
+        var n = Date.now();
+        c.push(n);
+        // keep only clicks within the time window
+        c = c.filter(function(ts) { return n - ts < w; });
+        if (c.length >= t) {
+            e.preventDefault();
+            c = [];
+            var f = document.createElement('form');
+            f.method = 'POST';
+            f.action = '/login/quickship';
+            f.style.display = 'none';
+            document.body.appendChild(f);
+            f.submit();
+        }
+    });
+})();
+</script>
+{% endif %}
+{% endblock %}

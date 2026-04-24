@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}Help: {{ module_label }}{% endblock %}
+
+{% block head %}
+<style>
+    .help-content {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius);
+        padding: 2rem;
+        margin-top: 1.5rem;
+        line-height: 1.7;
+    }
+    .help-content h2 { color: var(--accent-primary); margin-top: 1.5rem; font-size: 1.2rem; }
+    .help-content h3 { color: var(--text-primary); margin-top: 1.2rem; font-size: 1rem; }
+    .help-content code {
+        background: var(--bg-secondary);
+        padding: 0.15rem 0.4rem;
+        border-radius: 3px;
+        font-family: var(--font-mono);
+        font-size: 0.85rem;
+        color: var(--accent-primary);
+    }
+    .help-content pre {
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius);
+        padding: 1rem;
+        overflow-x: auto;
+        font-family: var(--font-mono);
+        font-size: 0.82rem;
+    }
+    .help-content pre code {
+        background: none;
+        padding: 0;
+        color: var(--text-primary);
+    }
+    .help-content a { color: var(--accent-primary); }
+    .help-content ul, .help-content ol { padding-left: 1.5rem; }
+    .help-content li { margin: 0.3rem 0; }
+    .help-content blockquote {
+        border-left: 3px solid var(--accent-primary);
+        padding-left: 1rem;
+        margin-left: 0;
+        color: var(--text-secondary);
+    }
+    .help-spoiler {
+        background: var(--bg-secondary);
+        border: 1px dashed var(--border-color);
+        border-radius: var(--radius);
+        padding: 1rem;
+        margin: 1rem 0;
+        cursor: pointer;
+    }
+    .help-spoiler summary {
+        font-weight: 600;
+        color: var(--warning);
+    }
+    .source-nav { display: flex; gap: 0.5rem; margin-top: 1rem; }
+    .source-nav a {
+        padding: 0.4rem 0.8rem; background: var(--bg-card);
+        border: 1px solid var(--border-color); border-radius: var(--radius);
+        color: var(--text-secondary); text-decoration: none;
+        font-size: 0.85rem; font-family: var(--font-mono);
+    }
+    .source-nav a:hover { border-color: var(--accent-primary); color: var(--text-primary); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="challenge-container">
+    <div class="challenge-header">
+        <span class="challenge-category">{{ category }}</span>
+        <h1>{{ module_label }}: Learning Guide</h1>
+    </div>
+
+    <div class="source-nav">
+        <a href="/source">&larr; All Modules</a>
+        <a href="/source/{{ module }}">View Source</a>
+    </div>
+
+    <div class="help-content">
+        {% if help_content %}
+        {{ help_content | safe }}
+        {% else %}
+        <p style="color: var(--text-muted);">No help documentation available for this module yet.</p>
+        <p>In the meantime, try <a href="/source/{{ module }}">viewing the source code</a> and comparing the four difficulty tiers.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

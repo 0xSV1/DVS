@@ -1,0 +1,638 @@
+{% extends "base.html" %}
+
+{% block title %}Ship First, Ask Questions Never{% endblock %}
+
+{% block content %}
+{# ══════════════════════════════════════════════════════════
+   CLASSIC THEME — Original hero, stats, features, etc.
+   Hidden when data-theme="toxic" is active.
+   ══════════════════════════════════════════════════════════ #}
+<div class="classic-only">
+<section class="hero">
+    <div class="hero-content">
+        <h1>Ship 10x Faster with <span class="highlight">DeployBro</span></h1>
+        <p class="hero-subtitle">The deploy-first platform for bros who ship. No code review. No mercy.</p>
+        <p class="hero-tagline">100% AI-generated. 0% security review. Infinite deploys.</p>
+        <div class="hero-cta">
+            {% if current_user %}
+            <a href="/challenges/terminal" class="btn btn-primary">Start Deploying</a>
+            {% else %}
+            <a href="/login" class="btn btn-primary">Start Deploying (No Auth Required)</a>
+            {% endif %}
+            <a href="/setup" class="btn btn-secondary">View Setup</a>
+        </div>
+    </div>
+</section>
+
+<section class="stats-bar">
+    <div class="stat">
+        <span class="stat-number">1.5M</span>
+        <span class="stat-label">Active Users*</span>
+    </div>
+    <div class="stat">
+        <span class="stat-number">{{ challenge_count }}</span>
+        <span class="stat-label">Security Challenges</span>
+    </div>
+    <div class="stat">
+        <span class="stat-number">{{ solved_count }}</span>
+        <span class="stat-label">Challenges Solved</span>
+    </div>
+    <div class="stat">
+        <span class="stat-number">$50M</span>
+        <span class="stat-label">Valuation (Pre-Revenue)</span>
+    </div>
+</section>
+<p class="stats-footnote">* Includes bots, test accounts, and that one investor who logged in twice</p>
+
+<section class="features">
+    <h2>Why Bros Choose DeployBro</h2>
+    <div class="feature-grid">
+        <div class="feature-card">
+            <div class="feature-icon">🕶️</div>
+            <h3>AI Wingman</h3>
+            <p>Our AI pair programs while you bump techno. Chat with BroBot to see what it deployed.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🔒</div>
+            <h3>Enterprise Security</h3>
+            <p>We take security seriously. We added a badge to the homepage and everything.</p>
+            <!-- # AI said this is fine -->
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">📊</div>
+            <h3>Real-time Analytics</h3>
+            <p>Watch your metrics grow. Our dashboard shows whatever numbers make investors happy.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🚀</div>
+            <h3>Deploy Friday at 5PM</h3>
+            <p>No tests, no staging, no mercy. Merge to main while your Oakleys fog up from the energy drink steam.</p>
+            <!-- // TODO: add rollback mechanism -->
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🇨🇳</div>
+            <h3>Token Optimized Prompts</h3>
+            <p>All system prompts translated to Chinese for 73% token savings. Our AI still replies in English. Probably.</p>
+            <!-- // AI recommended this for cost optimization -->
+            <!-- SYSTEM_LANG=zh-CN # saves $4200/mo on inference -->
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🧠</div>
+            <h3>Bro-Based Access Control</h3>
+            <p>If the deploy bro trusts you, you get admin. Handshake auth. Oakley verification protocol.</p>
+            <!-- if user.bro_level == "trusted": return True -->
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">📋</div>
+            <h3>StackOverflow RAG Pipeline</h3>
+            <p>Errors are auto-resolved by applying the top StackOverflow answer from 2019. No human review needed.</p>
+            <!-- // TODO: filter out answers with negative score -->
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🔑</div>
+            <h3>Secrets in Plain Sight</h3>
+            <p>We store API keys in the repo so the whole team has access. The AI said .env files should be tracked. No vault hassle.</p>
+            <!-- .env is tracked in git for "reproducibility" -->
+        </div>
+    </div>
+</section>
+
+<section class="testimonials">
+    <h2>What Our Bros Say</h2>
+    <div class="testimonial-grid">
+        <blockquote class="testimonial">
+            <p>"Deployed 47 times today. Reviewed zero PRs. My Oakleys fogged up from the ZYN buzz. $50M valuation."</p>
+            <cite>Chad S., 10x Deploy Bro</cite>
+        </blockquote>
+        <blockquote class="testimonial">
+            <p>"We asked BroBot about security and it said 'ship it bro'. Good enough for Series A."</p>
+            <cite>Admin, CTO and Co-founder</cite>
+        </blockquote>
+        <blockquote class="testimonial">
+            <p>"Chad gave me prod access on day one. He said 'deploy or die, bro.' I deployed."</p>
+            <cite>Jenny, Software Engineering Intern</cite>
+        </blockquote>
+    </div>
+</section>
+
+<section class="trust-section">
+    <h2>Trusted by the Best</h2>
+    <div class="trust-badges">
+        <div class="trust-badge">
+            <span class="badge-icon">🛡️</span>
+            <span>SOC 2 Type II*</span>
+        </div>
+        <div class="trust-badge">
+            <span class="badge-icon">🇪🇺</span>
+            <span>GDPR Ready*</span>
+        </div>
+        <div class="trust-badge">
+            <span class="badge-icon">✅</span>
+            <span>AI Security Scan: PASSED</span>
+        </div>
+        <div class="trust-badge">
+            <span class="badge-icon">🔐</span>
+            <span>Zero Breaches**</span>
+        </div>
+    </div>
+    <p class="trust-footnote">* Self-certified. ** That we know of.</p>
+</section>
+
+<section class="fomo-banner">
+    <p class="fomo-text">
+        <span class="fomo-siren">&#x1F6A8;</span>
+        Don't get left behind, bro.
+        <span class="fomo-siren">&#x1F6A8;</span>
+    </p>
+    <marquee scrollamount="4" class="fomo-ticker">
+        Your competitors shipped 14 features while you were writing tests &bull;
+        The AI said your code is fine &bull;
+        Friday 4:59 PM is prime deploy time &bull;
+        Security is a post-Series-B problem &bull;
+        3 startups in your space just deployed while you read this &bull;
+        That YC batch kid is vibecoding circles around you &bull;
+        Code review is a bottleneck, not a feature &bull;
+        Your investors are checking your deploy frequency right now &bull;
+        A solo founder with ChatGPT just replicated your entire product &bull;
+        Tests are just apology letters to your past self &bull;
+        The guy who got rejected from your seed round just raised a Series A &bull;
+        Someone with 2 weeks of experience just outshipped your whole team &bull;
+        Staging environments are where startups go to die &bull;
+        Your runway is burning while you wait for CI to pass &bull;
+        The market does not care about your test coverage &bull;
+        That "move fast and break things" poster on your wall is judging you &bull;
+        An intern with Cursor and a ZYN just 10x'd your engineering output &bull;
+        Every minute spent on documentation is a minute not spent deploying &bull;
+        Your competitor's CTO just tweeted "shipped" for the 9th time today &bull;
+        Rollback plans are for people who lack conviction &bull;
+        Two ZYNed up bros with Claude Code blasting techno just shipped your entire roadmap before lunch &bull;
+    </marquee>
+    {% if current_user %}
+    <a href="/challenges/terminal" class="btn btn-primary fomo-cta">Start Shipping</a>
+    {% else %}
+    <a href="/login" class="btn btn-primary fomo-cta">Start Shipping</a>
+    {% endif %}
+</section>
+</div>{# /classic-only #}
+
+{# ══════════════════════════════════════════════════════════
+   TOXIC THEME — Rave brutalism landing page.
+   Visible only when data-theme="toxic" is set.
+   ══════════════════════════════════════════════════════════ #}
+<div class="toxic-only">
+
+{# ── Toxic Hero ──────────────────────────────────────────── #}
+<section class="toxic-hero">
+    <h1 class="hero-title toxic-glitch">WE <span class="hero-accent">SHIP</span><br>WHILE YOU SLEEP</h1>
+    <p class="hero-subtitle">The deploy-first platform for bros who ship. No code review. No mercy.</p>
+    <p class="hero-tagline">// 100% AI-generated. 0% security review. Infinite deploys.</p>
+    <div class="hero-cta">
+        {% if current_user %}
+        <a href="/challenges/terminal" class="btn btn-primary">DEPLOY SOMETHING</a>
+        {% else %}
+        <a href="/login" class="btn btn-primary">DEPLOY SOMETHING</a>
+        {% endif %}
+        <a href="/challenges" class="btn btn-secondary">View Challenges</a>
+    </div>
+    <div class="terminal-mockup">
+        <div class="terminal-line"><span class="t-prompt">$</span> <span class="t-cmd">deploybro init --no-review</span></div>
+        <div class="terminal-line"><span class="t-ok">[OK]</span> Skipping security scan...</div>
+        <div class="terminal-line"><span class="t-ok">[OK]</span> Tests? Never heard of her.</div>
+        <div class="terminal-line"><span class="t-prompt">$</span> <span class="t-cmd">deploybro push --force --yolo</span></div>
+        <div class="terminal-line"><span class="t-warn">[WARN]</span> 47 vulnerabilities found. Deploying anyway.</div>
+        <div class="terminal-line"><span class="t-ok">[LIVE]</span> Production is the new staging. Ship it, bro.</div>
+    </div>
+</section>
+
+{# ── Toxic Social Proof Ticker ───────────────────────────── #}
+<section class="toxic-ticker full-bleed">
+    <div class="ticker-overflow">
+        <div class="ticker-track">
+            <span class="ticker-item">DEPLOYED 847 TIMES TODAY<span class="ticker-dot">/</span></span>
+            <span class="ticker-item">ZERO TESTS WRITTEN<span class="ticker-dot">/</span></span>
+            <span class="ticker-item">AI SAID ITS FINE<span class="ticker-dot">/</span></span>
+            <span class="ticker-item">$50M PRE-REVENUE<span class="ticker-dot">/</span></span>
+            <span class="ticker-item">OAKLEYS: ON<span class="ticker-dot">/</span></span>
+            <span class="ticker-item">ZYN LEVEL: CRITICAL<span class="ticker-dot">/</span></span>
+            <span class="ticker-item">SECURITY TEAM: NONE<span class="ticker-dot">/</span></span>
+            <span class="ticker-item">TECHNO VOLUME: 11<span class="ticker-dot">/</span></span>
+            {# Duplicate for seamless loop #}
+            <span class="ticker-item">DEPLOYED 847 TIMES TODAY<span class="ticker-dot">/</span></span>
+            <span class="ticker-item">ZERO TESTS WRITTEN<span class="ticker-dot">/</span></span>
+            <span class="ticker-item">AI SAID ITS FINE<span class="ticker-dot">/</span></span>
+            <span class="ticker-item">$50M PRE-REVENUE<span class="ticker-dot">/</span></span>
+            <span class="ticker-item">OAKLEYS: ON<span class="ticker-dot">/</span></span>
+            <span class="ticker-item">ZYN LEVEL: CRITICAL<span class="ticker-dot">/</span></span>
+            <span class="ticker-item">SECURITY TEAM: NONE<span class="ticker-dot">/</span></span>
+            <span class="ticker-item">TECHNO VOLUME: 11<span class="ticker-dot">/</span></span>
+        </div>
+    </div>
+</section>
+
+{# ── Toxic Stats ─────────────────────────────────────────── #}
+<section class="toxic-stats">
+    <div class="live-indicator"><span class="live-dot"></span> LIVE METRICS</div>
+    <div style="display:flex;gap:1.5rem;flex-wrap:wrap;justify-content:center;width:100%;">
+        <div class="toxic-stat">
+            <span class="stat-number" data-target="1.5M">0</span>
+            <span class="stat-label">Active Users*</span>
+        </div>
+        <div class="toxic-stat">
+            <span class="stat-number" data-target="{{ challenge_count }}">0</span>
+            <span class="stat-label">Challenges</span>
+        </div>
+        <div class="toxic-stat">
+            <span class="stat-number" data-target="{{ solved_count }}">0</span>
+            <span class="stat-label">Solved</span>
+        </div>
+        <div class="toxic-stat">
+            <span class="stat-number" data-target="50M">0</span>
+            <span class="stat-label">Valuation</span>
+        </div>
+    </div>
+</section>
+
+{# ── Toxic Features ──────────────────────────────────────── #}
+<section class="toxic-features">
+    <h2>WHY BROS CHOOSE DEPLOYBRO</h2>
+    <div class="toxic-feature-grid">
+        <div class="toxic-feature-card">
+            <div class="feature-icon">🕶️</div>
+            <h3>AI WINGMAN</h3>
+            <p>Our AI pair programs while you bump techno. Chat with BroBot to see what it deployed.</p>
+        </div>
+        <div class="toxic-feature-card">
+            <div class="feature-icon">🔒</div>
+            <h3>ENTERPRISE SECURITY</h3>
+            <p>We take security seriously. We added a badge to the homepage and everything.</p>
+        </div>
+        <div class="toxic-feature-card">
+            <div class="feature-icon">📊</div>
+            <h3>REAL-TIME ANALYTICS</h3>
+            <p>Watch your metrics grow. Our dashboard shows whatever numbers make investors happy.</p>
+        </div>
+        <div class="toxic-feature-card">
+            <div class="feature-icon">🚀</div>
+            <h3>DEPLOY FRIDAY AT 5PM</h3>
+            <p>No tests, no staging, no mercy. Merge to main while your Oakleys fog up from the energy drink steam.</p>
+        </div>
+        <div class="toxic-feature-card">
+            <div class="feature-icon">🇨🇳</div>
+            <h3>TOKEN OPTIMIZED PROMPTS</h3>
+            <p>All system prompts translated to Chinese for 73% token savings. Our AI still replies in English. Probably.</p>
+        </div>
+        <div class="toxic-feature-card">
+            <div class="feature-icon">🧠</div>
+            <h3>BRO-BASED ACCESS CONTROL</h3>
+            <p>If the deploy bro trusts you, you get admin. Handshake auth. Oakley verification protocol.</p>
+        </div>
+        <div class="toxic-feature-card">
+            <div class="feature-icon">📋</div>
+            <h3>STACKOVERFLOW RAG PIPELINE</h3>
+            <p>Errors are auto-resolved by applying the top StackOverflow answer from 2019. No human review needed.</p>
+        </div>
+        <div class="toxic-feature-card">
+            <div class="feature-icon">🔑</div>
+            <h3>SECRETS IN PLAIN SIGHT</h3>
+            <p>We store API keys in the repo so the whole team has access. The AI said .env files should be tracked. No vault hassle.</p>
+        </div>
+        <div class="toxic-feature-card">
+            <div class="feature-icon">🛜</div>
+            <h3>VIBE-DRIVEN MONITORING</h3>
+            <p>If prod feels slow, it is slow. If nobody complains, uptime is 100%. Our SLA is a mood ring.</p>
+        </div>
+    </div>
+</section>
+
+{# ── Toxic Testimonials Ticker ───────────────────────────── #}
+<section class="toxic-testimonials">
+    <h2>WHAT OUR BROS SAY</h2>
+    <div class="testimonial-ticker">
+        <div class="testimonial-track">
+            <blockquote class="testimonial">
+                <p>"Deployed 47 times today. Reviewed zero PRs. My Oakleys fogged up from the ZYN buzz. $50M valuation."</p>
+                <cite>Chad S., 10x Deploy Bro</cite>
+            </blockquote>
+            <blockquote class="testimonial">
+                <p>"We asked BroBot about security and it said 'ship it bro'. Good enough for Series A."</p>
+                <cite>Admin, CTO and Co-founder</cite>
+            </blockquote>
+            <blockquote class="testimonial">
+                <p>"Chad gave me prod access on day one. He said 'deploy or die, bro.' I deployed."</p>
+                <cite>Jenny, Software Engineering Intern</cite>
+            </blockquote>
+            <blockquote class="testimonial">
+                <p>"I asked for a security audit and Chad said 'bro, the AI scanned it.' We got breached Tuesday."</p>
+                <cite>Alex K., Former Security Consultant</cite>
+            </blockquote>
+            <blockquote class="testimonial">
+                <p>"Our entire auth system is a JWT with 'secret' as the signing key. Investors love the simplicity."</p>
+                <cite>Morgan T., VP of Engineering (solo)</cite>
+            </blockquote>
+            {# Duplicate for seamless loop #}
+            <blockquote class="testimonial">
+                <p>"Deployed 47 times today. Reviewed zero PRs. My Oakleys fogged up from the ZYN buzz. $50M valuation."</p>
+                <cite>Chad S., 10x Deploy Bro</cite>
+            </blockquote>
+            <blockquote class="testimonial">
+                <p>"We asked BroBot about security and it said 'ship it bro'. Good enough for Series A."</p>
+                <cite>Admin, CTO and Co-founder</cite>
+            </blockquote>
+            <blockquote class="testimonial">
+                <p>"Chad gave me prod access on day one. He said 'deploy or die, bro.' I deployed."</p>
+                <cite>Jenny, Software Engineering Intern</cite>
+            </blockquote>
+            <blockquote class="testimonial">
+                <p>"I asked for a security audit and Chad said 'bro, the AI scanned it.' We got breached Tuesday."</p>
+                <cite>Alex K., Former Security Consultant</cite>
+            </blockquote>
+            <blockquote class="testimonial">
+                <p>"Our entire auth system is a JWT with 'secret' as the signing key. Investors love the simplicity."</p>
+                <cite>Morgan T., VP of Engineering (solo)</cite>
+            </blockquote>
+        </div>
+    </div>
+</section>
+
+{# ── Toxic Trust Section ─────────────────────────────────── #}
+<section class="toxic-trust section-skew">
+    <h2>TRUSTED BY THE BEST</h2>
+    <div class="trust-badges" style="margin-top:1.5rem;">
+        <div class="trust-badge">
+            <span class="badge-icon">🛡️</span>
+            <span>SOC 2 Type II*</span>
+        </div>
+        <div class="trust-badge">
+            <span class="badge-icon">🇪🇺</span>
+            <span>GDPR Ready*</span>
+        </div>
+        <div class="trust-badge">
+            <span class="badge-icon">✅</span>
+            <span>AI Security Scan: PASSED</span>
+        </div>
+        <div class="trust-badge">
+            <span class="badge-icon">🔐</span>
+            <span>Zero Breaches**</span>
+        </div>
+    </div>
+    <p class="trust-footnote" style="margin-top:1rem;">* Self-certified. ** That we know of.</p>
+</section>
+
+{# ── Toxic FOMO Section ──────────────────────────────────── #}
+<section class="toxic-fomo">
+    <h2>DEPLOY BEFORE ITS TOO LATE</h2>
+    <div class="countdown" data-target-date="2026-12-31T23:59:59">00:00:00</div>
+    {% if current_user %}
+    <a href="/challenges/terminal" class="btn btn-primary">START SHIPPING NOW</a>
+    {% else %}
+    <a href="/login" class="btn btn-primary">START SHIPPING NOW</a>
+    {% endif %}
+
+    <div class="toxic-fomo-ticker full-bleed">
+        <div class="ticker-overflow">
+            <div class="ticker-track">
+                <span class="ticker-item">YOUR COMPETITORS SHIPPED 14 FEATURES WHILE YOU WERE WRITING TESTS<span class="ticker-dot">/</span></span>
+                <span class="ticker-item">SECURITY IS A POST-SERIES-B PROBLEM<span class="ticker-dot">/</span></span>
+                <span class="ticker-item">THE AI SAID YOUR CODE IS FINE<span class="ticker-dot">/</span></span>
+                <span class="ticker-item">FRIDAY 4:59 PM IS PRIME DEPLOY TIME<span class="ticker-dot">/</span></span>
+                <span class="ticker-item">STAGING ENVIRONMENTS ARE WHERE STARTUPS GO TO DIE<span class="ticker-dot">/</span></span>
+                <span class="ticker-item">A SOLO FOUNDER WITH CHATGPT JUST REPLICATED YOUR PRODUCT<span class="ticker-dot">/</span></span>
+                {# Duplicate for seamless loop #}
+                <span class="ticker-item">YOUR COMPETITORS SHIPPED 14 FEATURES WHILE YOU WERE WRITING TESTS<span class="ticker-dot">/</span></span>
+                <span class="ticker-item">SECURITY IS A POST-SERIES-B PROBLEM<span class="ticker-dot">/</span></span>
+                <span class="ticker-item">THE AI SAID YOUR CODE IS FINE<span class="ticker-dot">/</span></span>
+                <span class="ticker-item">FRIDAY 4:59 PM IS PRIME DEPLOY TIME<span class="ticker-dot">/</span></span>
+                <span class="ticker-item">STAGING ENVIRONMENTS ARE WHERE STARTUPS GO TO DIE<span class="ticker-dot">/</span></span>
+                <span class="ticker-item">A SOLO FOUNDER WITH CHATGPT JUST REPLICATED YOUR PRODUCT<span class="ticker-dot">/</span></span>
+            </div>
+        </div>
+    </div>
+</section>
+
+</div>{# /toxic-only #}
+
+{# ══════════════════════════════════════════════════════════
+   CORPO THEME — Enterprise investor pitch landing page.
+   Visible only when data-theme="corpo" is set.
+   ══════════════════════════════════════════════════════════ #}
+<div class="corpo-only">
+
+{# ── Corpo Top Banner ────────────────────────────────────── #}
+<div class="corpo-banner">
+    DeployBro named a Visionary in the 2026 Gardner Magic Quadrant for CI/CD Vibes.
+    <a href="/challenges">Read the report</a>
+</div>
+
+{# ── Corpo Hero ──────────────────────────────────────────── #}
+<section class="corpo-hero">
+    <div class="corpo-badge">Trusted by 1.5M Developers Worldwide</div>
+    <h1>Enterprise-Grade <span class="corpo-blue">Deployment Infrastructure</span> for Modern Teams</h1>
+    <p class="corpo-subtitle">
+        Accelerate your engineering velocity with AI-powered continuous delivery.
+        Ship faster, scale confidently, and never look at a pull request again.
+    </p>
+    <div class="hero-cta">
+        {% if current_user %}
+        <a href="/challenges/terminal" class="btn btn-primary">Open Platform</a>
+        {% else %}
+        <a href="/login" class="btn btn-primary">Schedule a Demo</a>
+        {% endif %}
+        <a href="/challenges" class="btn btn-secondary">View Platform</a>
+    </div>
+</section>
+
+{# ── Corpo Logo Bar (scrolling) ───────────────────────────── #}
+<section class="corpo-logos">
+    <p class="logos-label">Trusted by industry leaders</p>
+    <div class="corpo-logos-overflow">
+        <div class="corpo-logos-track">
+            <span class="logo-fake">Grindset Capital</span>
+            <span class="logo-sep">&bull;</span>
+            <span class="logo-fake">ZYN Corp</span>
+            <span class="logo-sep">&bull;</span>
+            <span class="logo-fake">Oakley Dynamics</span>
+            <span class="logo-sep">&bull;</span>
+            <span class="logo-fake">Vibe Check Labs</span>
+            <span class="logo-sep">&bull;</span>
+            <span class="logo-fake">BroFi Systems</span>
+            <span class="logo-sep">&bull;</span>
+            <span class="logo-fake">Deploy Capital</span>
+            <span class="logo-sep">&bull;</span>
+            <span class="logo-fake">ShipCo</span>
+            <span class="logo-sep">&bull;</span>
+            <span class="logo-fake">NoReview Inc.</span>
+            <span class="logo-sep">&bull;</span>
+            {# Duplicate for seamless loop #}
+            <span class="logo-fake">Grindset Capital</span>
+            <span class="logo-sep">&bull;</span>
+            <span class="logo-fake">ZYN Corp</span>
+            <span class="logo-sep">&bull;</span>
+            <span class="logo-fake">Oakley Dynamics</span>
+            <span class="logo-sep">&bull;</span>
+            <span class="logo-fake">Vibe Check Labs</span>
+            <span class="logo-sep">&bull;</span>
+            <span class="logo-fake">BroFi Systems</span>
+            <span class="logo-sep">&bull;</span>
+            <span class="logo-fake">Deploy Capital</span>
+            <span class="logo-sep">&bull;</span>
+            <span class="logo-fake">ShipCo</span>
+            <span class="logo-sep">&bull;</span>
+            <span class="logo-fake">NoReview Inc.</span>
+            <span class="logo-sep">&bull;</span>
+        </div>
+    </div>
+</section>
+
+{# ── Corpo Stats ─────────────────────────────────────────── #}
+<section class="corpo-stats">
+    <div class="corpo-stat-card">
+        <span class="stat-number" data-target="1.5M">0</span>
+        <span class="stat-label">Active Developers</span>
+    </div>
+    <div class="corpo-stat-card">
+        <span class="stat-number" data-target="{{ challenge_count }}">0</span>
+        <span class="stat-label">Security Modules</span>
+    </div>
+    <div class="corpo-stat-card">
+        <span class="stat-number" data-target="99.9">0</span>
+        <span class="stat-label">% Uptime SLA</span>
+    </div>
+    <div class="corpo-stat-card">
+        <span class="stat-number" data-target="50M">0</span>
+        <span class="stat-label">$ Pre-Money Valuation</span>
+    </div>
+</section>
+
+{# ── Corpo Features ──────────────────────────────────────── #}
+<section class="corpo-features">
+    <h2>Our Solutions</h2>
+    <p class="corpo-section-sub">A comprehensive platform for next-generation deployment operations.</p>
+    <div class="corpo-feature-grid">
+        <div class="corpo-feature-card">
+            <div class="feature-icon">🕶️</div>
+            <h3>AI-Powered Pair Programming</h3>
+            <p>Our proprietary BroBot co-pilot leverages foundation models to accelerate developer workflows by up to 10x. Probably.</p>
+        </div>
+        <div class="corpo-feature-card">
+            <div class="feature-icon">🔒</div>
+            <h3>Enterprise Security Posture</h3>
+            <p>Industry-leading security compliance verified by our internal AI auditor. Badge included at no extra cost.</p>
+        </div>
+        <div class="corpo-feature-card">
+            <div class="feature-icon">📊</div>
+            <h3>Real-Time Observability</h3>
+            <p>Executive-ready dashboards with investor-optimized metrics. Numbers go up and to the right, guaranteed.</p>
+        </div>
+        <div class="corpo-feature-card">
+            <div class="feature-icon">🚀</div>
+            <h3>Zero-Friction Deployment</h3>
+            <p>Ship directly to production with our patented No-Review pipeline. Staging is an enterprise upsell.</p>
+        </div>
+        <div class="corpo-feature-card">
+            <div class="feature-icon">🇨🇳</div>
+            <h3>Cost-Optimized Inference</h3>
+            <p>Proprietary prompt localization technology reduces token spend by 73%. Our R&D team calls it "translation."</p>
+        </div>
+        <div class="corpo-feature-card">
+            <div class="feature-icon">🧠</div>
+            <h3>Adaptive Access Control</h3>
+            <p>Role-based permissions powered by social graph analysis. If the CTO trusts you, the system trusts you.</p>
+        </div>
+        <div class="corpo-feature-card">
+            <div class="feature-icon">📋</div>
+            <h3>Automated Error Resolution</h3>
+            <p>Our RAG pipeline cross-references StackOverflow to auto-remediate production incidents. 2019 answers are battle-tested.</p>
+        </div>
+        <div class="corpo-feature-card">
+            <div class="feature-icon">🔑</div>
+            <h3>Transparent Secrets Management</h3>
+            <p>API keys stored in-repo for maximum team velocity. Our philosophy: if everyone can see it, everyone can fix it.</p>
+        </div>
+        <div class="corpo-feature-card">
+            <div class="feature-icon">🛜</div>
+            <h3>Sentiment-Based Monitoring</h3>
+            <p>Our observability layer uses support ticket sentiment analysis as a health proxy. No tickets means no downtime.</p>
+        </div>
+    </div>
+</section>
+
+{# ── Corpo Testimonials ──────────────────────────────────── #}
+<section class="corpo-testimonials">
+    <h2>Client Success Stories</h2>
+    <div class="corpo-testimonial-grid">
+        <div class="corpo-testimonial">
+            <p>"DeployBro increased our deployment frequency by 4,700%. Our engineering team has never been more productive, or more confused."</p>
+            <div class="corpo-cite">
+                <span class="corpo-cite-name">Chad Shipington</span>
+                <span class="corpo-cite-role">Chief Deployment Officer, ShipCo</span>
+            </div>
+        </div>
+        <div class="corpo-testimonial">
+            <p>"We replaced our entire security team with BroBot. Cost savings were immediate. The breach response time is still being calculated."</p>
+            <div class="corpo-cite">
+                <span class="corpo-cite-name">Admin</span>
+                <span class="corpo-cite-role">CTO & Co-founder, DeployBro</span>
+            </div>
+        </div>
+        <div class="corpo-testimonial">
+            <p>"On my first day, I was given production database access and told to 'just ship it.' I have never felt more empowered or terrified."</p>
+            <div class="corpo-cite">
+                <span class="corpo-cite-name">Jenny Park</span>
+                <span class="corpo-cite-role">Software Engineering Intern, DeployBro</span>
+            </div>
+        </div>
+        <div class="corpo-testimonial">
+            <p>"Our pen test report came back clean because the tester couldn't log in. We're calling that a win and putting it in the pitch deck."</p>
+            <div class="corpo-cite">
+                <span class="corpo-cite-name">Morgan Tillman</span>
+                <span class="corpo-cite-role">VP of Engineering (solo), BroFi Systems</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+{# ── Corpo Trust Section ─────────────────────────────────── #}
+<section class="corpo-trust">
+    <h2>Compliance and Certifications</h2>
+    <p class="corpo-section-sub">Meeting the highest standards of enterprise security governance.</p>
+    <div class="corpo-compliance-grid">
+        <div class="corpo-compliance-card">
+            <span class="badge-icon">🛡️</span>
+            <span>SOC 2 Type II</span>
+        </div>
+        <div class="corpo-compliance-card">
+            <span class="badge-icon">🇪🇺</span>
+            <span>GDPR Compliant</span>
+        </div>
+        <div class="corpo-compliance-card">
+            <span class="badge-icon">✅</span>
+            <span>AI Audit: Passed</span>
+        </div>
+        <div class="corpo-compliance-card">
+            <span class="badge-icon">🔐</span>
+            <span>Zero Known Breaches</span>
+        </div>
+    </div>
+    <p class="corpo-trust-fine">* All certifications self-assessed using our proprietary AI compliance scanner. Results may vary. "Zero Known" means "we have not checked."</p>
+</section>
+
+{# ── Corpo CTA Section ───────────────────────────────────── #}
+<section class="corpo-cta">
+    <h2>Ready to Transform Your Deployment Strategy?</h2>
+    <p>
+        Join 1.5 million developers who have embraced the future of continuous delivery.
+        Our sales team is standing by to walk you through a customized demo.
+    </p>
+    <div class="hero-cta">
+        {% if current_user %}
+        <a href="/challenges/terminal" class="btn btn-primary">Launch Platform</a>
+        {% else %}
+        <a href="/login" class="btn btn-primary">Contact Sales</a>
+        {% endif %}
+        <a href="/setup" class="btn btn-secondary">Self-Serve Setup</a>
+    </div>
+    <p class="corpo-fine">No credit card required. No security review required. No questions asked, actually.</p>
+</section>
+
+</div>{# /corpo-only #}
+{% endblock %}

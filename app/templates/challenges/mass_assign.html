@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}{{ challenge_name }}{% endblock %}
+
+{% block content %}
+<div class="challenge-container">
+    <div class="challenge-header">
+        <span class="challenge-category">{{ challenge_category }}</span>
+        <h1>{{ challenge_name }}</h1>
+        {% if request.state.difficulty in ("intern", "junior") %}
+        <p class="challenge-subtitle">Update your DeployBro profile. The API accepts any JSON fields you send.</p>
+        {% else %}
+        <p class="challenge-subtitle">Update your DeployBro profile via the API.</p>
+        {% endif %}
+    </div>
+
+    <div class="source-nav" style="margin: 0.8rem 0;">
+        <a href="/source/mass_assign" style="padding:0.3rem 0.6rem;background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius);color:var(--text-secondary);text-decoration:none;font-size:0.8rem;font-family:var(--font-mono);">View Source</a>
+        <a href="/source/mass_assign/help" style="padding:0.3rem 0.6rem;background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius);color:var(--text-secondary);text-decoration:none;font-size:0.8rem;font-family:var(--font-mono);">Help &amp; Hints</a>
+    </div>
+
+    <div class="challenge-body">
+        {% if not current_user %}
+        <div class="auth-error">You need to <a href="/login">log in</a> first to use this challenge.</div>
+        {% else %}
+        <p>Logged in as: <strong>{{ current_user.username }}</strong> (role: {{ current_user.role }})</p>
+
+        {% if result %}
+        <div class="{% if result.success %}auth-success{% else %}auth-error{% endif %}" style="margin: 1rem 0;">
+            {% if result.success %}Profile updated. Role: {{ result.user.role }}{% else %}{{ result.error }}{% endif %}
+        </div>
+        {% endif %}
+
+        {% if request.state.difficulty == "intern" %}
+        <div class="debug-box" style="margin-top: 1.5rem;">
+            <strong>API Endpoint</strong>
+            <pre>POST /api/users/me
+Content-Type: application/json
+
+{"bio": "New bio text"}
+
+// What other fields might the API accept?
+// Try: {"role": "admin", "bio": "I promoted myself"}</pre>
+        </div>
+        {% elif request.state.difficulty == "junior" %}
+        <div class="debug-box" style="margin-top: 1.5rem;">
+            <strong>API Endpoint</strong>
+            <pre>POST /api/users/me
+Content-Type: application/json
+
+{"bio": "New bio text"}
+
+// Compare the fields in the response to what you sent. Any extras?</pre>
+        </div>
+        {% elif request.state.difficulty == "senior" %}
+        <div class="debug-box" style="margin-top: 1.5rem;">
+            <strong>API Endpoint</strong>
+            <pre>POST /api/users/me
+Content-Type: application/json
+
+{"bio": "New bio text"}</pre>
+        </div>
+        {% endif %}
+
+        <div id="mass-assign-demo" style="margin-top: 1.5rem;">
+            <h2>Quick Test</h2>
+            <div class="form-group" style="margin-bottom: 0.5rem;">
+                <label>JSON Body</label>
+                {% if request.state.difficulty == "intern" %}
+                <textarea id="json-body" rows="3" style="background:var(--bg-primary);border:1px solid var(--border-color);border-radius:var(--radius);padding:0.7rem;color:var(--text-primary);font-family:var(--font-mono);font-size:0.85rem;width:100%;">{"role": "admin", "bio": "Promoted via mass assignment"}</textarea>
+                {% else %}
+                <textarea id="json-body" rows="3" style="background:var(--bg-primary);border:1px solid var(--border-color);border-radius:var(--radius);padding:0.7rem;color:var(--text-primary);font-family:var(--font-mono);font-size:0.85rem;width:100%;">{"bio": "Updated bio"}</textarea>
+                {% endif %}
+            </div>
+            <button onclick="sendUpdate()" class="btn btn-primary">Send Request</button>
+            <pre id="mass-assign-result" style="margin-top:1rem;font-family:var(--font-mono);font-size:0.85rem;color:var(--text-secondary);"></pre>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+async function sendUpdate() {
+    const body = document.getElementById('json-body').value;
+    const result = document.getElementById('mass-assign-result');
+    try {
+        const resp = await fetch('/api/users/me', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: body,
+        });
+        const data = await resp.json();
+        result.textContent = JSON.stringify(data, null, 2);
+    } catch (e) {
+        result.textContent = 'Error: ' + e.message;
+    }
+}
+</script>
+{% endblock %}

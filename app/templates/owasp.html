@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+
+{% block title %}OWASP Reference{% endblock %}
+
+{% block head %}
+<style>
+    .owasp-grid { margin-top: 1.5rem; }
+    .owasp-category {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius);
+        margin-bottom: 1rem;
+        overflow: hidden;
+    }
+    .owasp-category-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 1.2rem;
+        border-bottom: 1px solid var(--border-color);
+        cursor: pointer;
+    }
+    .owasp-category-header:hover { background: var(--bg-card-hover); }
+    .owasp-id {
+        font-family: var(--font-mono);
+        font-weight: 700;
+        color: var(--accent-primary);
+        font-size: 0.9rem;
+        min-width: 3.5rem;
+    }
+    .owasp-name { font-weight: 600; flex: 1; margin-left: 0.8rem; }
+    .owasp-badge {
+        font-size: 0.75rem;
+        padding: 0.15rem 0.5rem;
+        border-radius: 4px;
+        font-family: var(--font-mono);
+    }
+    .owasp-badge--has { background: var(--accent-primary); color: #fff; }
+    .owasp-badge--none { background: var(--bg-secondary); color: var(--text-muted); }
+    .owasp-body { padding: 1rem 1.2rem; }
+    .owasp-desc { color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 0.8rem; }
+    .owasp-link {
+        font-size: 0.8rem;
+        color: var(--accent-primary);
+        text-decoration: none;
+        font-family: var(--font-mono);
+    }
+    .owasp-link:hover { text-decoration: underline; }
+    .owasp-challenges { margin-top: 0.8rem; }
+    .owasp-challenge {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        padding: 0.4rem 0;
+        font-size: 0.85rem;
+        border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .owasp-challenge:last-child { border-bottom: none; }
+    .owasp-challenge .solve-dot {
+        width: 8px; height: 8px; border-radius: 50%;
+        background: var(--border-color);
+        flex-shrink: 0;
+    }
+    .owasp-challenge .solve-dot.solved { background: var(--success); }
+    .owasp-challenge .ch-name { flex: 1; }
+    .owasp-challenge .ch-cwe {
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        color: var(--text-muted);
+    }
+    .owasp-section-title {
+        font-size: 1.1rem;
+        margin: 2rem 0 0.5rem;
+        padding-bottom: 0.3rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+    .diff-stars { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="challenge-container">
+    <div class="challenge-header">
+        <span class="challenge-category">Reference</span>
+        <h1>OWASP Top 10 Cross Reference</h1>
+        <p class="challenge-subtitle">Every DVS challenge mapped to its OWASP category. Click a category to see linked challenges.</p>
+    </div>
+
+    <div class="challenge-body">
+        <h2 class="owasp-section-title">OWASP Top 10 for Web Applications (2025)</h2>
+        <div class="owasp-grid">
+            {% for cat in web_categories %}
+            <details class="owasp-category" {% if challenge_map.get(cat.id) %}open{% endif %}>
+                <summary class="owasp-category-header">
+                    <span class="owasp-id">{{ cat.id }}</span>
+                    <span class="owasp-name">{{ cat.name }}</span>
+                    {% if challenge_map.get(cat.id) %}
+                    <span class="owasp-badge owasp-badge--has">{{ challenge_map[cat.id] | length }} challenge{{ 's' if challenge_map[cat.id] | length != 1 else '' }}</span>
+                    {% else %}
+                    <span class="owasp-badge owasp-badge--none">0</span>
+                    {% endif %}
+                </summary>
+                <div class="owasp-body">
+                    <p class="owasp-desc">{{ cat.desc }}</p>
+                    <a href="{{ cat.url }}" target="_blank" class="owasp-link">OWASP Documentation &rarr;</a>
+                    {% if challenge_map.get(cat.id) %}
+                    <div class="owasp-challenges">
+                        {% for ch in challenge_map[cat.id] %}
+                        <div class="owasp-challenge">
+                            <span class="solve-dot {% if ch.solved %}solved{% endif %}"></span>
+                            <span class="ch-name">{{ ch.name }}</span>
+                            <span class="diff-stars">{{ '★' * ch.difficulty }}{{ '☆' * (4 - ch.difficulty) }}</span>
+                            <span class="ch-cwe">{{ ch.cwe }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </details>
+            {% endfor %}
+        </div>
+
+        <h2 class="owasp-section-title">OWASP Top 10 for LLM Applications (2025)</h2>
+        <div class="owasp-grid">
+            {% for cat in llm_categories %}
+            <details class="owasp-category" {% if challenge_map.get(cat.id) %}open{% endif %}>
+                <summary class="owasp-category-header">
+                    <span class="owasp-id">{{ cat.id }}</span>
+                    <span class="owasp-name">{{ cat.name }}</span>
+                    {% if challenge_map.get(cat.id) %}
+                    <span class="owasp-badge owasp-badge--has">{{ challenge_map[cat.id] | length }} challenge{{ 's' if challenge_map[cat.id] | length != 1 else '' }}</span>
+                    {% else %}
+                    <span class="owasp-badge owasp-badge--none">0</span>
+                    {% endif %}
+                </summary>
+                <div class="owasp-body">
+                    <p class="owasp-desc">{{ cat.desc }}</p>
+                    <a href="{{ cat.url }}" target="_blank" class="owasp-link">OWASP Documentation &rarr;</a>
+                    {% if challenge_map.get(cat.id) %}
+                    <div class="owasp-challenges">
+                        {% for ch in challenge_map[cat.id] %}
+                        <div class="owasp-challenge">
+                            <span class="solve-dot {% if ch.solved %}solved{% endif %}"></span>
+                            <span class="ch-name">{{ ch.name }}</span>
+                            <span class="diff-stars">{{ '★' * ch.difficulty }}{{ '☆' * (4 - ch.difficulty) }}</span>
+                            <span class="ch-cwe">{{ ch.cwe }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </details>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

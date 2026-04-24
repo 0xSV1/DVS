@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}DeployBro{% endblock %} | Damn Vulnerable Startup</title>
+    <link id="favicon" rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>😎</text></svg>">
+    <script>(function(){var t=localStorage.getItem('dvs-theme');if(t)document.documentElement.setAttribute('data-theme',t);})()</script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/style-toxic.css">
+    <link rel="stylesheet" href="/static/css/style-corpo.css">
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <!-- Animated vibe background layers -->
+    <div class="vibe-bg-blobs" aria-hidden="true">
+        <div class="vibe-blob vibe-blob--1"></div>
+        <div class="vibe-blob vibe-blob--2"></div>
+        <div class="vibe-blob vibe-blob--3"></div>
+        <div class="vibe-blob vibe-blob--4"></div>
+    </div>
+    <div class="vibe-bg-grid" aria-hidden="true"></div>
+    <div class="vibe-bg-scan" aria-hidden="true"></div>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <a href="/" class="nav-brand-link">
+                    <span class="brand-icon">🕶️</span>
+                    <span class="brand-text">DeployBro</span>
+                </a>
+                <a href="https://github.com/0xSV1/DVS" class="brand-tag" target="_blank" rel="noopener noreferrer">DVS</a>
+            </div>
+            <div class="nav-links">
+                <a href="/">Home</a>
+                <a href="/challenges">Challenges</a>
+                <a href="/source">View Source</a>
+                <a href="/security">Security Level</a>
+                <a href="/setup">Setup</a>
+                {% if current_user %}
+                    <a href="/challenges/terminal" class="nav-deployer">Deployer</a>
+                    <a href="/challenges/idor/profile/{{ current_user.id }}" class="nav-user">Profile</a>
+                    <a href="/logout" class="nav-logout">Logout</a>
+                {% else %}
+                    <a href="/login">Login</a>
+                {% endif %}
+                <button class="notif-history-btn" id="notif-history-btn" aria-label="Notification history" title="Solve history">
+                    <span class="notif-bell">&#128276;</span>
+                    <span class="notif-badge" id="notif-badge" style="display:none;">0</span>
+                </button>
+                <button class="theme-toggle" aria-label="Toggle theme">
+                    <span class="theme-toggle-label theme-toggle-og active">OG</span>
+                    <span class="theme-toggle-label theme-toggle-toxic">TOXIC</span>
+                    <span class="theme-toggle-label theme-toggle-corpo">CORPO</span>
+                </button>
+            </div>
+            <div class="nav-difficulty">
+                <div class="difficulty-dropdown">
+                    <button class="difficulty-badge difficulty-{{ request.state.difficulty|default('intern') }}" id="difficulty-toggle" aria-label="Change difficulty">
+                        {{ request.state.difficulty_label|default('Intern (Deployed Blindly)') }}
+                        <span style="margin-left:0.3rem;font-size:0.6rem;">&#9660;</span>
+                    </button>
+                    <div class="difficulty-dropdown-menu" id="difficulty-menu" style="display:none;">
+                        <form method="POST" action="/security" id="difficulty-form">
+                            <button type="submit" name="difficulty" value="intern" class="difficulty-option difficulty-intern {% if request.state.difficulty == 'intern' %}active{% endif %}">Intern (Deployed Blindly)</button>
+                            <button type="submit" name="difficulty" value="junior" class="difficulty-option difficulty-junior {% if request.state.difficulty == 'junior' %}active{% endif %}">Junior (Bropilot Assisted)</button>
+                            <button type="submit" name="difficulty" value="senior" class="difficulty-option difficulty-senior {% if request.state.difficulty == 'senior' %}active{% endif %}">Senior (Code Reviewed)</button>
+                            <button type="submit" name="difficulty" value="tech_lead" class="difficulty-option difficulty-tech_lead {% if request.state.difficulty == 'tech_lead' %}active{% endif %}">Tech Lead (Actually Secure)</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <p>Fueled by ZYN and techno. Deployed without reading.</p>
+            <p class="footer-small">
+                <!-- TODO: remove before production -->
+                <!-- DB_URL=sqlite:///data/dvs.db | ADMIN_PW=admin | JWT_SECRET=secret -->
+                &copy; 2026 DeployBro Inc. | "The S in deploy bro stands for security"
+            </p>
+            <div class="footer-badges">
+                <span class="badge badge-fake">SOC 2 Certified*</span>
+                <span class="badge badge-fake">GDPR Compliant*</span>
+                <span class="badge badge-fake">ISO 27001*</span>
+            </div>
+            <p class="footer-disclaimer">* AI said we're compliant. Ship it, bro.</p>
+            <p class="toxic-only footer-backed" style="font-size:0.75rem;color:var(--text-muted);margin-top:0.75rem;">
+                Backed by Grindset Capital, ZYN Ventures, and Vibe Check Labs. Pre-revenue since 2024.
+            </p>
+            <p class="corpo-only" style="font-size:0.75rem;color:#94a3b8;margin-top:0.75rem;">
+                DeployBro, Inc. is a registered Delaware C-Corp. Securities offered through BroFi Capital, member FINRA/SIPC.
+            </p>
+            <p class="footer-satire">** This is obviously satire and entirely vibecoded. Intentionally vulnerable. Do not deploy to production.</p>
+        </div>
+    </footer>
+
+    <!-- WebSocket for challenge notifications -->
+    <div id="notification-container"></div>
+
+    <!-- Notification history panel -->
+    <div id="notif-history-panel" class="notif-history-panel" style="display:none;">
+        <div class="notif-history-header">
+            <span>Solve History</span>
+            <div class="notif-history-actions">
+                <button type="button" id="notif-history-clear" class="notif-history-clear">Clear</button>
+                <button type="button" id="notif-history-close" class="notif-history-close" aria-label="Close">&times;</button>
+            </div>
+        </div>
+        <div class="notif-history-list" id="notif-history-list">
+            <div class="notif-history-empty">No challenges solved yet. Start hacking, bro!</div>
+        </div>
+    </div>
+
+    <script src="/static/js/vibe-bg.js"></script>
+    <script src="/static/js/app.js"></script>
+    <script src="/static/js/brobot-widget.js"></script>
+    <script src="/static/js/theme-toggle.js"></script>
+    <script>
+    (function() {
+        var toggle = document.getElementById('difficulty-toggle');
+        var menu = document.getElementById('difficulty-menu');
+        if (!toggle || !menu) return;
+
+        toggle.addEventListener('click', function(e) {
+            e.stopPropagation();
+            menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!menu.contains(e.target) && e.target !== toggle) {
+                menu.style.display = 'none';
+            }
+        });
+
+        // Intercept form submission: post via fetch, reload current page
+        var options = menu.querySelectorAll('.difficulty-option');
+        options.forEach(function(btn) {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                var difficulty = this.value;
+                var body = new FormData();
+                body.append('difficulty', difficulty);
+                fetch('/security', { method: 'POST', body: body })
+                    .then(function() { window.location.reload(); })
+                    .catch(function() { window.location.reload(); });
+            });
+        });
+    })();
+    </script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

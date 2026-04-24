@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block title %}Source: {{ module_label }}{% endblock %}
+
+{% block head %}
+<style>{{ pygments_css }}</style>
+<style>
+    .source-files-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+    }
+    .source-file-panel {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius);
+        overflow: hidden;
+    }
+    .source-file-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.6rem 1rem;
+        border-bottom: 1px solid var(--border-color);
+        font-family: var(--font-mono);
+        font-size: 0.85rem;
+        background: rgba(255,255,255,0.02);
+        cursor: pointer;
+        user-select: none;
+    }
+    .source-file-header:hover {
+        background: rgba(255,255,255,0.04);
+    }
+    .source-file-header .toggle-icon {
+        color: var(--text-muted);
+        transition: transform 0.2s ease;
+    }
+    .source-file-header.collapsed .toggle-icon {
+        transform: rotate(-90deg);
+    }
+    .source-file-body {
+        overflow: auto;
+        font-size: 0.82rem;
+        max-height: 600px;
+    }
+    .source-file-body.collapsed {
+        display: none;
+    }
+    .source-file-body .source-highlight { margin: 0; background: transparent !important; }
+    .source-file-body .source-highlight pre { padding: 1rem; margin: 0; background: transparent; }
+    .source-file-body .linenodiv pre {
+        color: var(--text-muted); padding: 1rem 0.5rem; margin: 0;
+        text-align: right; background: rgba(255,255,255,0.02);
+        border-right: 1px solid var(--border-color);
+    }
+    .source-highlight table { border-collapse: collapse; width: 100%; }
+    .source-highlight td { padding: 0; vertical-align: top; }
+    .source-highlight td.linenos { width: 3rem; user-select: none; }
+    .source-nav { display: flex; gap: 0.5rem; margin-top: 1rem; }
+    .source-nav a {
+        padding: 0.4rem 0.8rem; background: var(--bg-card);
+        border: 1px solid var(--border-color); border-radius: var(--radius);
+        color: var(--text-secondary); text-decoration: none;
+        font-size: 0.85rem; font-family: var(--font-mono);
+    }
+    .source-nav a:hover { border-color: var(--accent-primary); color: var(--text-primary); }
+    .source-bulk-actions { display: flex; gap: 0.5rem; margin-left: auto; }
+    .source-bulk-actions button {
+        padding: 0.35rem 0.75rem; background: var(--bg-card);
+        border: 1px solid var(--border-color); border-radius: var(--radius);
+        color: var(--text-secondary); cursor: pointer;
+        font-size: 0.8rem; font-family: var(--font-mono);
+        transition: border-color 0.15s, color 0.15s;
+    }
+    .source-bulk-actions button:hover { border-color: var(--accent-primary); color: var(--text-primary); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="challenge-container">
+    <div class="challenge-header">
+        <span class="challenge-category">{{ category }}</span>
+        <h1>{{ module_label }}</h1>
+        <p class="challenge-subtitle">Source files for this module. Click a header to expand or collapse.</p>
+    </div>
+
+    <div class="source-nav">
+        <a href="/source">&larr; All Modules</a>
+        <div class="source-bulk-actions">
+            <button onclick="document.querySelectorAll('.source-file-header.collapsed').forEach(function(h){h.click();})">Expand all</button>
+            <button onclick="document.querySelectorAll('.source-file-header:not(.collapsed)').forEach(function(h){h.click();})">Collapse all</button>
+        </div>
+    </div>
+
+    <div class="source-files-list">
+        {% for file in files %}
+        <div class="source-file-panel">
+            <div class="source-file-header" onclick="this.classList.toggle('collapsed');this.nextElementSibling.classList.toggle('collapsed');">
+                <span>{{ file.name }}</span>
+                <span class="toggle-icon">&#9660;</span>
+            </div>
+            <div class="source-file-body">
+                {% if file.highlighted %}
+                {{ file.highlighted | safe }}
+                {% else %}
+                <p style="padding: 1.5rem; color: var(--text-muted);">Source file not found.</p>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

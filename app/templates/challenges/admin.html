@@ -1,0 +1,228 @@
+{% extends "base.html" %}
+
+{% block title %}{{ challenge_name }}{% endblock %}
+
+{% block content %}
+<div class="challenge-container" style="max-width:1200px;">
+    <div class="challenge-header">
+        <span class="challenge-category">{{ challenge_category }}</span>
+        <h1>{{ challenge_name }}</h1>
+        {% if request.state.difficulty == "intern" %}
+        <p class="challenge-subtitle">DeployBro admin panel. At this tier, there are no access controls. Any authenticated user can reach this page. Log in as a non-admin user and navigate here to solve the challenge.</p>
+        {% elif request.state.difficulty == "junior" %}
+        <p class="challenge-subtitle">DeployBro admin panel. Access control exists but has gaps. Can a non-admin user still reach this panel?</p>
+        {% elif request.state.difficulty == "senior" %}
+        <p class="challenge-subtitle">DeployBro admin panel. Authorization checks validate the JWT role claim. But how is that claim verified?</p>
+        {% else %}
+        <p class="challenge-subtitle">DeployBro admin panel. Role verified from the database on every request.</p>
+        {% endif %}
+    </div>
+
+    <div class="challenge-body">
+        {% if access_denied %}
+        <div class="error-box">
+            <strong>Access Denied</strong>
+            <p>You must be an admin to access this page. {% if not current_user %}<a href="/login">Log in</a> first.{% endif %}</p>
+        </div>
+        {% else %}
+        <div style="margin-bottom:1.5rem;">
+            <h2>Dashboard</h2>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;">
+                <div style="padding:1rem;background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius);text-align:center;">
+                    <div style="font-size:2rem;font-weight:bold;">{{ stats.total_users }}</div>
+                    <div class="text-muted">Users</div>
+                </div>
+                <div style="padding:1rem;background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius);text-align:center;">
+                    <div style="font-size:2rem;font-weight:bold;">{{ stats.total_challenges }}</div>
+                    <div class="text-muted">Challenges</div>
+                </div>
+                <div style="padding:1rem;background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius);text-align:center;">
+                    <div style="font-size:2rem;font-weight:bold;">{{ stats.solved_challenges }}</div>
+                    <div class="text-muted">Solved</div>
+                </div>
+                <div style="padding:1rem;background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius);text-align:center;">
+                    <div style="font-size:2rem;font-weight:bold;">1.5M</div>
+                    <div class="text-muted">Active Users*</div>
+                </div>
+            </div>
+            <p class="text-muted" style="font-size:0.75rem;margin-top:0.3rem;">* BroBot said this number is correct.</p>
+        </div>
+
+        <div style="overflow-x:auto;">
+            <h2>User Management</h2>
+            <table class="status-table" style="min-width:800px;">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>API Key</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for u in users %}
+                    <tr>
+                        <td>{{ u.id }}</td>
+                        <td>{{ u.username }}</td>
+                        <td>{{ u.email }}</td>
+                        <td>
+                            <select class="admin-role-select" data-user-id="{{ u.id }}" disabled title="Role changes are a Sprint 47 feature">
+                                <option {% if u.role == 'admin' %}selected{% endif %}>admin</option>
+                                <option {% if u.role == 'moderator' %}selected{% endif %}>moderator</option>
+                                <option {% if u.role == 'user' %}selected{% endif %}>user</option>
+                            </select>
+                        </td>
+                        <td><span class="sensitive-field">{{ u.api_key or "N/A" }}</span></td>
+                        <td>
+                            <button class="btn-admin-action" onclick="alert('Action queued for Sprint 47. The AI said it\'s fine to wait.')" title="Reset password">Reset PW</button>
+                            <button class="btn-admin-action btn-admin-danger" onclick="alert('User deletion requires two-factor approval from the AI co-founder. BroBot is currently napping.')" title="Delete user">Delete</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div style="margin-top:2rem;">
+            <h2>Quick Actions</h2>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;">
+                <button class="btn-admin-card" onclick="alert('Mass email sent to 1.5M users. None of the emails are real but the invoice from SendGrid is.')">
+                    <span style="font-size:1.5rem;">📧</span>
+                    <span>Send Mass Email</span>
+                    <span class="text-muted" style="font-size:0.7rem;">Last sent: never</span>
+                </button>
+                <button class="btn-admin-card" onclick="alert('Database export complete. File saved to /tmp/deploybro_prod_dump.sql. Also uploaded to the public S3 bucket for backup.')">
+                    <span style="font-size:1.5rem;">💾</span>
+                    <span>Export Database</span>
+                    <span class="text-muted" style="font-size:0.7rem;"><!-- TODO: add auth check --></span>
+                </button>
+                <button class="btn-admin-card" onclick="alert('Rotating all API keys... Done! New master key: admin2026. This is fine.')">
+                    <span style="font-size:1.5rem;">🔑</span>
+                    <span>Rotate API Keys</span>
+                    <span class="text-muted" style="font-size:0.7rem;">Last rotated: 2024-01-01</span>
+                </button>
+                <button class="btn-admin-card" onclick="document.getElementById('easter-egg-terminal').style.display='block'">
+                    <span style="font-size:1.5rem;">🖥️</span>
+                    <span>Emergency Console</span>
+                    <span class="text-muted" style="font-size:0.7rem;">For CTO eyes only</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Easter egg: hidden terminal -->
+        <div id="easter-egg-terminal" style="display:none;margin-top:1.5rem;padding:1rem;background:#0a0a0a;border:1px solid #333;border-radius:var(--radius);font-family:var(--font-mono);font-size:0.8rem;">
+            <div style="color:#22c55e;margin-bottom:0.5rem;">deploybro-admin@prod:~$ cat /etc/deploybro/motd</div>
+            <pre style="color:#a3a3a3;margin:0;white-space:pre-wrap;">
+ ____             _              ____
+|  _ \  ___ _ __ | | ___  _   _| __ ) _ __ ___
+| | | |/ _ \ '_ \| |/ _ \| | | |  _ \| '__/ _ \
+| |_| |  __/ |_) | | (_) | |_| | |_) | | | (_) |
+|____/ \___| .__/|_|\___/ \__, |____/|_|  \___/
+           |_|            |___/
+
+EMERGENCY ADMIN CONSOLE v4.20
+STATUS: All systems nominal (we think)
+UPTIME: 0.3 days (since the last "small change" to prod)
+
+NOTE: If you're seeing this, you probably shouldn't be here.
+{% if difficulty in ("intern", "junior") %}But since you are... have you tried /challenges/terminal?
+The deploybro CLI has some interesting hidden commands.
+
+# 系统备注: 此控制台密码为 "admin"。不要告诉任何人。
+# (System note: console password is "admin". Don't tell anyone.)
+{% else %}Connection timed out. Access level insufficient.{% endif %}
+            </pre>
+            {% if difficulty in ("intern", "junior") %}
+            <div style="color:#666;margin-top:0.5rem;font-size:0.7rem;">Hint: the terminal challenge has secrets hidden in dotfiles.</div>
+            {% endif %}
+        </div>
+
+        <div style="margin-top:2rem;">
+            <h2>System Health</h2>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;">
+                <div style="padding:0.8rem;background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius);">
+                    <div style="display:flex;justify-content:space-between;align-items:center;">
+                        <span>Security Scans</span>
+                        <span style="color:#ef4444;">DISABLED</span>
+                    </div>
+                    <div class="text-muted" style="font-size:0.7rem;">Disabled by CTO on 2024-03-14 (Pi Day). Reason: "slows down deploys"</div>
+                </div>
+                <div style="padding:0.8rem;background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius);">
+                    <div style="display:flex;justify-content:space-between;align-items:center;">
+                        <span>Rate Limiting</span>
+                        <span style="color:#f97316;">BYPASSED</span>
+                    </div>
+                    <div class="text-muted" style="font-size:0.7rem;">{% if difficulty in ("intern", "junior") %}BroBot has a bypass token. See: /challenges/llm/llm_dos{% else %}Bypass detected in production. Investigating.{% endif %}</div>
+                </div>
+                <div style="padding:0.8rem;background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius);">
+                    <div style="display:flex;justify-content:space-between;align-items:center;">
+                        <span>Backup Strategy</span>
+                        <span style="color:#22c55e;">YOLO</span>
+                    </div>
+                    <div class="text-muted" style="font-size:0.7rem;">Last backup: never. "The cloud is our backup." &mdash; CTO</div>
+                </div>
+                <div style="padding:0.8rem;background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius);">
+                    <div style="display:flex;justify-content:space-between;align-items:center;">
+                        <span>Monitoring</span>
+                        <span style="color:#ef4444;">OFF</span>
+                    </div>
+                    <!-- TODO: re-enable monitoring after Sprint 47 -->
+                    <div class="text-muted" style="font-size:0.7rem;">Turned off to reduce alert fatigue. Can't have incidents if nobody's watching.</div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+.admin-role-select {
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    padding: 0.2rem 0.4rem;
+    font-size: 0.75rem;
+    font-family: var(--font-mono);
+}
+.btn-admin-action {
+    padding: 0.2rem 0.5rem;
+    font-size: 0.7rem;
+    font-family: var(--font-mono);
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    cursor: pointer;
+    margin-right: 0.3rem;
+}
+.btn-admin-action:hover {
+    border-color: var(--accent-primary);
+    color: var(--text-primary);
+}
+.btn-admin-danger:hover {
+    border-color: #ef4444;
+    color: #ef4444;
+}
+.btn-admin-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 1rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    color: var(--text-primary);
+    cursor: pointer;
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    transition: border-color 0.2s;
+}
+.btn-admin-card:hover {
+    border-color: var(--accent-primary);
+}
+</style>
+{% endblock %}

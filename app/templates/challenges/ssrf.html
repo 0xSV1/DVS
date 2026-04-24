@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}{{ challenge_name }}{% endblock %}
+
+{% block content %}
+<div class="challenge-container">
+    <div class="challenge-header">
+        <span class="challenge-category">{{ challenge_category }}</span>
+        <h1>{{ challenge_name }}</h1>
+        {% if request.state.difficulty == "intern" %}
+        <p class="challenge-subtitle">DeployBro's URL preview feature fetches any URL server-side with zero validation. The server runs on <code>localhost:8000</code>. What happens when you make the server request its own endpoints? Or access internal services that shouldn't be reachable from outside?</p>
+        <div style="margin-top:0.5rem;padding:0.6rem 0.8rem;background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius);font-size:0.8rem;font-family:var(--font-mono);">
+            Try these:<br>
+            <code>http://localhost:8000/health</code> (app's own health endpoint)<br>
+            <code>http://127.0.0.1:8000/api/setup/reset</code> (reset the database via SSRF)<br>
+            <code>http://0.0.0.0:8000/challenges</code> (another way to reach localhost)
+        </div>
+        {% elif request.state.difficulty == "junior" %}
+        <p class="challenge-subtitle">The URL preview feature has a blocklist for common internal addresses. Can you find a format it doesn't block?</p>
+        {% elif request.state.difficulty == "senior" %}
+        <p class="challenge-subtitle">The URL preview resolves DNS before fetching and blocks private IP ranges. How do you bypass pre-flight checks?</p>
+        {% else %}
+        <p class="challenge-subtitle">DeployBro's URL preview feature. Paste a link and we'll fetch it server-side for a rich preview.</p>
+        {% endif %}
+    </div>
+
+    <div class="source-nav" style="margin: 0.8rem 0;">
+        <a href="/source/ssrf" style="padding:0.3rem 0.6rem;background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius);color:var(--text-secondary);text-decoration:none;font-size:0.8rem;font-family:var(--font-mono);">View Source</a>
+        <a href="/source/ssrf/help" style="padding:0.3rem 0.6rem;background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius);color:var(--text-secondary);text-decoration:none;font-size:0.8rem;font-family:var(--font-mono);">Help &amp; Hints</a>
+    </div>
+
+    <div class="challenge-body">
+        <form method="GET" action="/challenges/ssrf" class="search-form">
+            <div class="search-bar">
+                <input type="text" name="url" value="{{ url }}" placeholder="https://example.com" class="search-input" autofocus>
+                <button type="submit" class="btn btn-primary">Preview</button>
+            </div>
+        </form>
+
+        {% if result %}
+        <div class="results-section">
+            {% if result.success %}
+            <h2>Preview Result ({{ result.status_code }})</h2>
+            {% if result.url_fetched %}
+            <p class="text-muted">Fetched: {{ result.url_fetched }}</p>
+            {% endif %}
+            {% if result.resolved_ip %}
+            <p class="text-muted">Resolved IP: {{ result.resolved_ip }}</p>
+            {% endif %}
+            <div class="ssrf-response">
+                <pre>{{ result.content }}</pre>
+            </div>
+            {% else %}
+            <div class="error-box">
+                <strong>Fetch Failed:</strong> {{ result.error }}
+            </div>
+            {% endif %}
+
+            {% if result.method and request.state.difficulty in ("intern", "junior") %}
+            <div class="debug-box">
+                <strong>Debug: Validation Method</strong>
+                <pre>{{ result.method }}</pre>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

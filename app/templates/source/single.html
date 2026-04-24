@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}Source: {{ module_label }} ({{ tier_label }}){% endblock %}
+
+{% block head %}
+<style>{{ pygments_css }}</style>
+<style>
+    .source-single {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius);
+        overflow: hidden;
+        margin-top: 1.5rem;
+    }
+    .source-single-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.6rem 1rem;
+        border-bottom: 1px solid var(--border-color);
+        font-family: var(--font-mono);
+        font-size: 0.85rem;
+    }
+    .source-single-body {
+        overflow: auto;
+        font-size: 0.82rem;
+    }
+    .source-single-body .source-highlight { margin: 0; background: transparent !important; }
+    .source-single-body .source-highlight pre { padding: 1rem; margin: 0; background: transparent; }
+    .source-single-body .linenodiv pre {
+        color: var(--text-muted); padding: 1rem 0.5rem; margin: 0;
+        text-align: right; background: rgba(255,255,255,0.02);
+        border-right: 1px solid var(--border-color);
+    }
+    .source-highlight table { border-collapse: collapse; width: 100%; }
+    .source-highlight td { padding: 0; vertical-align: top; }
+    .source-highlight td.linenos { width: 3rem; user-select: none; }
+    .source-nav { display: flex; gap: 0.5rem; margin-top: 1rem; }
+    .source-nav a {
+        padding: 0.4rem 0.8rem; background: var(--bg-card);
+        border: 1px solid var(--border-color); border-radius: var(--radius);
+        color: var(--text-secondary); text-decoration: none;
+        font-size: 0.85rem; font-family: var(--font-mono);
+    }
+    .source-nav a:hover { border-color: var(--accent-primary); color: var(--text-primary); }
+    .tier-badge { padding: 0.15rem 0.5rem; border-radius: 4px; font-weight: 600; font-size: 0.75rem; }
+    .tier-badge--intern { background: var(--diff-intern); color: #000; }
+    .tier-badge--junior { background: var(--diff-junior); color: #000; }
+    .tier-badge--senior { background: var(--diff-senior); color: #000; }
+    .tier-badge--tech_lead { background: var(--diff-tech-lead); color: #fff; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="challenge-container">
+    <div class="challenge-header">
+        <span class="challenge-category">{{ category }}</span>
+        <h1>{{ module_label }}: {{ tier_label }} Tier</h1>
+    </div>
+
+    <div class="source-nav">
+        <a href="/source">&larr; All Modules</a>
+        <a href="/source/{{ module }}">Compare All Tiers</a>
+        <a href="/source/{{ module }}/help">Help &amp; References</a>
+    </div>
+
+    <div class="source-single">
+        <div class="source-single-header">
+            <span>{{ module }}/handlers/{{ tier }}.py</span>
+            <span class="tier-badge tier-badge--{{ tier }}">{{ tier_label }}</span>
+        </div>
+        <div class="source-single-body">
+            {% if highlighted %}
+            {{ highlighted | safe }}
+            {% else %}
+            <p style="padding: 1.5rem; color: var(--text-muted);">Source file not found.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

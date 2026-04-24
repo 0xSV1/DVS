@@ -1,0 +1,33 @@
+app = "damn-vulnerable-startup"
+primary_region = "iad"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[http_service]
+  internal_port = 8000
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+
+[checks]
+  [checks.health]
+    port = 8000
+    type = "http"
+    interval = "30s"
+    timeout = "5s"
+    path = "/health"
+
+[mounts]
+  source = "dvs_data"
+  destination = "/app/data"
+
+[env]
+  DATABASE_URL = "sqlite:///data/dvs.db"
+  CTF_MODE = "false"
+  LLM_PROVIDER = "mock"
+  DEFAULT_DIFFICULTY = "intern"
+  UNSAFE_CHALLENGES = "false"
+  # SECRET_KEY and CTF_KEY must be set as secrets:
+  #   fly secrets set SECRET_KEY=$(openssl rand -hex 32)
+  #   fly secrets set CTF_KEY=$(openssl rand -hex 32)

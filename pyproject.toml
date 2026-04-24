@@ -1,0 +1,23 @@
+[tool.ruff]
+target-version = "py311"
+line-length = 120
+exclude = [
+    "brobot-gguf",
+    "brobot-lora",
+    "finetune-env",
+    "_unsloth_sentencepiece_temp",
+    "unsloth_compiled_cache",
+    ".venv",
+    "app/static/uploads",
+]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W"]
+ignore = ["E501"]  # long lines are intentional in vulnerability payloads, docstrings, HTML strings
+
+[tool.ruff.lint.isort]
+known-first-party = ["app"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"

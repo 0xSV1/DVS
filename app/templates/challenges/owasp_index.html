@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}OWASP Top 10 Challenges{% endblock %}
+
+{% block content %}
+<div class="challenge-container">
+    <div class="challenge-header">
+        <span class="challenge-category">OWASP Top 10 (2025)</span>
+        <h1>The Classic Hit List</h1>
+        <p class="challenge-subtitle">
+            The deployment pipeline has zero gates and the "security review" is a Slack emoji.
+            Exploit every category of the OWASP Top 10 across DeployBro's codebase.
+        </p>
+    </div>
+
+    <div class="scoreboard-bar" style="margin-bottom:1.5rem;">
+        <div class="score-stat">
+            <span class="score-number">{{ solved }}/{{ total }}</span>
+            <span class="score-label">Solved</span>
+        </div>
+        <div class="progress-bar-container">
+            <div class="progress-bar" style="width: {{ progress_pct }}%"></div>
+            <span class="progress-label">{{ progress_pct }}%</span>
+        </div>
+    </div>
+
+    {% for cat_name, challenge_list in categories.items() %}
+    <h2 class="owasp-cat-heading">{{ cat_name }}</h2>
+    <div class="llm-challenge-grid">
+        {% for ch in challenge_list %}
+        <a href="{{ ch.url }}" class="llm-challenge-card {% if ch.solved %}card-solved{% endif %}">
+            <div class="card-top-row">
+                <span class="challenge-category">{{ ch.cwe }}</span>
+                {% if ch.solved %}<span class="card-solved-badge">&#10003;</span>{% endif %}
+            </div>
+            <h3>{{ ch.name }}</h3>
+            <p>{{ ch.description }}</p>
+            <div class="card-meta">
+                <span class="challenge-item-difficulty difficulty-stars-{{ ch.difficulty_stars }}">
+                    {% for i in range(ch.difficulty) %}&#9733;{% endfor %}{% for i in range(4 - ch.difficulty) %}&#9734;{% endfor %}
+                </span>
+                <span class="card-points">{{ ch.points }} pts</span>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

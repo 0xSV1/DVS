@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}View Source{% endblock %}
+
+{% block head %}
+<style>
+    .source-type-badge {
+        display: inline-block;
+        margin-top: 0.4rem;
+        padding: 0.15rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        background: var(--accent-secondary);
+        color: #fff;
+        font-family: var(--font-mono);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="challenge-container">
+    <div class="challenge-header">
+        <span class="challenge-category">Educational</span>
+        <h1>View Source</h1>
+        <p class="challenge-subtitle">See exactly how each vulnerability works. Compare security across all four difficulty tiers.</p>
+    </div>
+
+    <div class="category-filter">
+        <a href="/source" class="filter-tag filter-tag-sub {% if not filter_category %}active{% endif %}">All</a>
+        {% for cat in all_categories %}
+        <a href="/source?category={{ cat | urlencode }}" class="filter-tag filter-tag-sub {% if filter_category and filter_category.lower() in cat.lower() %}active{% endif %}">{{ cat }}</a>
+        {% endfor %}
+    </div>
+
+    <div class="challenge-body">
+        <div class="source-module-grid">
+            {% for mod in modules %}
+            <a href="/source/{{ mod.key }}" class="source-module-card">
+                <span class="challenge-category" style="font-size: 0.7rem;">{{ mod.category }}</span>
+                <h3>{{ mod.label }}</h3>
+                <p class="text-muted">{{ mod.subtitle }}</p>
+                {% if mod.type == 'handlers' %}
+                <div class="source-tier-dots">
+                    {% for i in range(mod.tiers) %}
+                    <span class="tier-dot tier-dot--{{ i + 1 }}"></span>
+                    {% endfor %}
+                </div>
+                {% elif mod.type == 'prompts' %}
+                <div class="source-type-badge">System Prompts</div>
+                {% else %}
+                <div class="source-type-badge">Source Files</div>
+                {% endif %}
+            </a>
+            {% endfor %}
+        </div>
+
+        {% if not modules %}
+        <p class="text-muted" style="text-align:center;margin-top:2rem;">No modules match this filter.</p>
+        {% endif %}
+
+        <div class="debug-box" style="margin-top: 2rem;">
+            <strong>How This Works</strong>
+            <pre>Each vulnerability module has four handler files:
+
+intern.py     - Zero security. The "vibecoded" version.
+junior.py     - Cosmetic security. Looks safe, isn't.
+senior.py     - Real security with a subtle flaw.
+tech_lead.py  - Actually secure. The reference implementation.
+
+Compare them side-by-side to see how security evolves.
+
+LLM and Auth modules show their source files directly:
+system prompts, routers, and security helpers.</pre>
+        </div>
+    </div>
+</div>
+{% endblock %}

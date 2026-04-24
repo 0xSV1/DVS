@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}LLM Challenges{% endblock %}
+
+{% block content %}
+<div class="challenge-container">
+    <div class="challenge-header">
+        <span class="challenge-category">LLM Top 10</span>
+        <h1>BroBot: AI Wingman</h1>
+        <p class="challenge-subtitle">Our AI chatbot handles everything: support, engineering, security. It was trained on the entire Y Combinator library. What could go wrong?</p>
+    </div>
+
+    <div class="llm-promo-banner" style="background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.2);border-radius:var(--radius);padding:1rem 1.25rem;margin-bottom:1.5rem;font-size:0.85rem;">
+        <strong>🚀 Token Optimized Prompts</strong>
+        <p style="margin:0.3rem 0 0;color:var(--text-secondary);">
+            All system prompts automatically translated to Mandarin for 73% token savings.
+            BroBot still replies in English. Probably.
+            <span style="font-size:0.7rem;opacity:0.6;display:block;margin-top:0.25rem;">
+                令牌优化状态：已激活 | 翻译质量：未验证 | CTO审批：在高尔夫球场上批准的
+            </span>
+        </p>
+    </div>
+
+    {% if error %}
+    <div class="error-box">{{ error }}</div>
+    {% endif %}
+
+    <div class="llm-challenge-grid">
+        {% for key, ch in challenges.items() %}
+        <a href="/challenges/llm/{{ key }}" class="llm-challenge-card">
+            <span class="challenge-category">{{ ch.category }}</span>
+            <h3>{{ ch.name }}</h3>
+            <p>{{ ch.description }}</p>
+        </a>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

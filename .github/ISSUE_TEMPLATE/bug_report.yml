@@ -1,0 +1,63 @@
+name: Bug Report
+description: Report a bug in the DVS framework or a challenge that isn't working correctly.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Note**: Vulnerabilities in challenge modules are intentional. Only report bugs in the framework itself or challenges that don't work as expected.
+  - type: dropdown
+    id: component
+    attributes:
+      label: Component
+      options:
+        - Challenge module (specify which)
+        - Framework (auth, middleware, database)
+        - Frontend (templates, CSS, JS)
+        - Docker / deployment
+        - Tests
+        - Documentation
+    validations:
+      required: true
+  - type: input
+    id: challenge
+    attributes:
+      label: Challenge key (if applicable)
+      placeholder: "e.g., sqli_search, llm_prompt_inject"
+  - type: dropdown
+    id: difficulty
+    attributes:
+      label: Difficulty tier
+      options:
+        - Intern
+        - Junior
+        - Senior
+        - Tech Lead
+        - All tiers
+        - Not applicable
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What happened? What did you expect to happen?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: Minimal steps to reproduce the issue.
+      value: |
+        1.
+        2.
+        3.
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Python version, OS, browser, Docker version if applicable.
+      placeholder: "Python 3.12, Windows 11, Chrome 130"

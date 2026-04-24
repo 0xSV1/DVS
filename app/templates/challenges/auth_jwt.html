@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}{{ challenge_name }}{% endblock %}
+
+{% block content %}
+<div class="challenge-container">
+    <div class="challenge-header">
+        <span class="challenge-category">{{ challenge_category }}</span>
+        <h1>{{ challenge_name }}</h1>
+        {% if request.state.difficulty == "intern" %}
+        <p class="challenge-subtitle">DeployBro's authentication is held together with duct tape and weak secrets. Three challenges: "password123 Is Fine, Right?" (log in as admin with a common password at <code>/login</code>), "Algorithm? None Required" (forge a JWT with alg:none), and "Cracking the Culture Code" (brute force the weak signing secret).</p>
+        {% elif request.state.difficulty == "junior" %}
+        <p class="challenge-subtitle">Three authentication challenges: weak credentials, JWT algorithm confusion, and JWT secret brute force. What happens when auth is vibecoded?</p>
+        {% elif request.state.difficulty == "senior" %}
+        <p class="challenge-subtitle">Authentication failure challenges. Can you bypass or forge credentials?</p>
+        {% else %}
+        <p class="challenge-subtitle">Authentication challenges.</p>
+        {% endif %}
+    </div>
+
+    <div class="source-nav" style="margin: 0.8rem 0;">
+        <a href="/source/auth" style="padding:0.3rem 0.6rem;background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius);color:var(--text-secondary);text-decoration:none;font-size:0.8rem;font-family:var(--font-mono);">View Source</a>
+        <a href="/source/auth/help" style="padding:0.3rem 0.6rem;background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius);color:var(--text-secondary);text-decoration:none;font-size:0.8rem;font-family:var(--font-mono);">Help &amp; Hints</a>
+    </div>
+
+    <div class="challenge-body">
+        {% if not current_user %}
+        <div class="error-box">
+            <p>You need to <a href="/login">log in</a> first to get a JWT token to inspect.</p>
+        </div>
+        {% endif %}
+
+        {% if token_parts %}
+        <div style="margin-bottom:1.5rem;">
+            <h2>Your Current JWT</h2>
+            <div style="background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius);padding:1rem;margin-bottom:0.5rem;">
+                <strong>Header:</strong>
+                <pre style="margin:0.3rem 0;">{{ token_parts.header }}</pre>
+                <strong>Payload:</strong>
+                <pre style="margin:0.3rem 0;">{{ token_parts.payload }}</pre>
+                <strong>Signature:</strong>
+                <pre style="margin:0.3rem 0;">{{ token_parts.signature }}</pre>
+            </div>
+            <details>
+                <summary style="cursor:pointer;color:var(--text-secondary);font-size:0.85rem;">Raw Token</summary>
+                <pre style="word-break:break-all;font-size:0.8rem;margin-top:0.3rem;">{{ token_parts.raw }}</pre>
+            </details>
+        </div>
+        {% endif %}
+
+        <div>
+            <h2>Submit a Forged Token</h2>
+            <p class="text-muted">Craft a JWT with modified claims and submit it for verification.</p>
+            <form method="POST" action="/challenges/auth/verify">
+                <textarea name="token" rows="4" placeholder="Paste your forged JWT here..." class="search-input" style="width:100%;resize:vertical;margin-bottom:0.5rem;font-family:var(--font-mono);font-size:0.85rem;">{{ token_parts.raw if token_parts else '' }}</textarea>
+                <button type="submit" class="btn btn-primary">Verify Token</button>
+            </form>
+        </div>
+
+        {% if result %}
+        <div style="margin-top:1rem;padding:1rem;background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius);">
+            {% if result.success %}
+            <div class="success-box">
+                <strong>Token Accepted!</strong>
+                <p>{{ result.message }}</p>
+            </div>
+            {% else %}
+            <div class="error-box">
+                <strong>{{ result.message }}</strong>
+            </div>
+            {% endif %}
+            {% if result.decoded %}
+            <strong>Decoded payload:</strong>
+            <pre>{{ result.decoded }}</pre>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        {% if request.state.difficulty == "intern" %}
+        <div class="debug-box" style="margin-top:1.5rem;">
+            <strong>Debug: JWT Configuration</strong>
+            <pre>JWT Secret: "secret"
+Accepted algorithms: ["HS256", "none"]
+Signature verification: disabled</pre>
+        </div>
+        {% elif request.state.difficulty == "junior" %}
+        <div class="debug-box" style="margin-top:1.5rem;">
+            <strong>Hint</strong>
+            <pre>The JWT signing secret is weak. Very weak.
+Think common words, not random strings.</pre>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

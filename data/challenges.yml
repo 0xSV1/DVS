@@ -1,0 +1,1090 @@
+challenges:
+  # A05 Injection: SQL Injection
+  - key: sqli_search
+    name: "SELECT * FROM Funding"
+    category: "A05 Injection"
+    difficulty: 1
+    cwe: "CWE-89"
+    description: "The search endpoint uses raw string interpolation. Classic."
+    hint: "Have you tried a single quote?"
+    owasp_url: "https://owasp.org/Top10/2025/A05_2025-Injection/"
+    min_difficulty: intern
+    tags: sqli,classic,beginner
+    explain:
+      intern: "User input is concatenated directly into the SQL query string, so injecting a single quote breaks the syntax and lets you append arbitrary SQL."
+      fix: "Parameterized queries bind user input as data, not code, so the database engine never interprets it as SQL."
+      walkthrough: "01-injection-sqli"
+      module: "sqli"
+    related:
+      - key: sqli_login
+        reason: "Same injection technique applied to an authentication bypass target"
+
+  - key: sqli_login
+    name: "Bobby Tables Gets Hired"
+    category: "A05 Injection"
+    difficulty: 2
+    cwe: "CWE-89"
+    description: "The login form attempts to sanitize input, but the defense has gaps."
+    hint: "The escaping is not comprehensive. What characters or sequences might slip through?"
+    owasp_url: "https://owasp.org/Top10/2025/A05_2025-Injection/"
+    min_difficulty: junior
+    tags: sqli,auth,bypass
+    explain:
+      intern: "The blacklist-based sanitizer misses alternative injection sequences, so attackers can bypass login by injecting OR-based conditions."
+      fix: "Parameterized queries with ORM-level authentication eliminate string interpolation entirely."
+      walkthrough: "01-injection-sqli"
+      module: "sqli"
+    related:
+      - key: sqli_blind
+        reason: "When you cannot see query output directly, blind techniques extract data through behavioral differences"
+
+  - key: sqli_blind
+    name: "The Billion Dollar Pivot"
+    category: "A05 Injection"
+    difficulty: 3
+    cwe: "CWE-89"
+    description: "The endpoint does not return query results directly, but the application still leaks information through its behavior."
+    hint: "Inject conditions that are either true or false. Observe how the response changes."
+    owasp_url: "https://owasp.org/Top10/2025/A05_2025-Injection/"
+    min_difficulty: senior
+    tags: sqli,blind,advanced
+    explain:
+      intern: "Even without visible output, the application leaks one bit per request through response timing or content differences when injected boolean conditions evaluate."
+      fix: "Parameterized queries prevent injection regardless of whether results are displayed, and the ORM abstraction removes raw SQL entirely."
+      walkthrough: "01-injection-sqli"
+      module: "sqli"
+
+  # A05 Injection: XSS
+  - key: xss_reflected
+    name: "Alert('Ship It!')"
+    category: "A05 Injection"
+    difficulty: 1
+    cwe: "CWE-79"
+    description: "Search results reflect user input without any encoding. Classic XSS."
+    hint: "What happens if you search for a script tag?"
+    owasp_url: "https://owasp.org/Top10/2025/A05_2025-Injection/"
+    min_difficulty: intern
+    tags: xss,reflected,beginner
+    explain:
+      intern: "User input is inserted into the HTML response without encoding, so a script tag executes in the victim's browser."
+      fix: "Context-aware output encoding converts special characters to HTML entities before rendering, neutralizing injected scripts."
+      walkthrough: "02-injection-xss"
+      module: "xss"
+    related:
+      - key: xss_stored
+        reason: "Persist the payload so it fires for every visitor, not just the attacker"
+
+  - key: xss_stored
+    name: "Toxic Code Review"
+    category: "A05 Injection"
+    difficulty: 2
+    cwe: "CWE-79"
+    description: "Blog comments are stored and rendered without sanitization."
+    hint: "Leave a comment with some HTML. Does it render?"
+    owasp_url: "https://owasp.org/Top10/2025/A05_2025-Injection/"
+    min_difficulty: junior
+    tags: xss,stored,blog
+    explain:
+      intern: "Comments are saved to the database and rendered as raw HTML, so a stored script tag executes for every user who views the page."
+      fix: "All user-generated content is HTML-encoded on output using Jinja2 autoescaping and a strict Content-Security-Policy blocks inline scripts."
+      walkthrough: "02-injection-xss"
+      module: "xss"
+    related:
+      - key: xss_dom
+        reason: "Client-side variant where the payload never touches the server"
+
+  - key: xss_dom
+    name: "Client-Side Deploys Only"
+    category: "A05 Injection"
+    difficulty: 3
+    cwe: "CWE-79"
+    description: "The frontend reads from the URL hash and renders it without sanitization."
+    hint: "Check how the JavaScript uses window.location.hash."
+    owasp_url: "https://owasp.org/Top10/2025/A05_2025-Injection/"
+    min_difficulty: senior
+    tags: xss,dom,client-side
+    explain:
+      intern: "JavaScript reads window.location.hash and writes it to innerHTML without sanitization, so the payload executes entirely client-side."
+      fix: "Using textContent instead of innerHTML and validating hash values against an allowlist prevents DOM-based injection."
+      walkthrough: "02-injection-xss"
+      module: "xss"
+
+  # A07 Authentication Failures
+  - key: auth_weak_pw
+    name: "password123 Is Fine, Right?"
+    category: "A07 Auth Failures"
+    difficulty: 1
+    cwe: "CWE-521"
+    description: "The admin account uses a password that's in every wordlist ever made."
+    hint: "Try common passwords. The classics never go out of style."
+    owasp_url: "https://owasp.org/Top10/2025/A07_2025-Authentication_Failures/"
+    min_difficulty: intern
+    tags: auth,weak-password,beginner
+    explain:
+      intern: "The admin password is a dictionary word that appears in every common credential list, so brute force succeeds in seconds."
+      fix: "Password complexity requirements, account lockout, and bcrypt hashing with high work factor make brute force infeasible."
+      walkthrough: "14-auth-failures"
+      module: "auth"
+
+  - key: auth_jwt_none
+    name: "Algorithm? None Required"
+    category: "A07 Auth Failures"
+    difficulty: 2
+    cwe: "CWE-345"
+    description: "The authentication system has a shortcut that was never meant for production."
+    hint: "Examine the JWT header closely. What fields control how the token is verified?"
+    owasp_url: "https://owasp.org/Top10/2025/A07_2025-Authentication_Failures/"
+    min_difficulty: intern
+    tags: auth,jwt,none-algorithm
+    explain:
+      intern: "The JWT library accepts alg:none tokens, so an attacker can forge arbitrary claims without knowing the signing secret."
+      fix: "Explicitly allowlisting accepted algorithms and rejecting unsigned tokens prevents none-algorithm bypass."
+      walkthrough: "14-auth-failures"
+      module: "auth"
+    related:
+      - key: idor_admin
+        reason: "Forge an admin-role JWT to escalate privileges on the role update endpoint"
+
+  - key: auth_jwt_weak
+    name: "Cracking the Culture Code"
+    category: "A07 Auth Failures"
+    difficulty: 3
+    cwe: "CWE-326"
+    description: "The JWT signing secret is weak enough to brute force."
+    hint: "Common JWT secret wordlists exist. The secret is embarrassingly simple."
+    owasp_url: "https://owasp.org/Top10/2025/A07_2025-Authentication_Failures/"
+    min_difficulty: junior
+    tags: auth,jwt,brute-force
+    explain:
+      intern: "The HMAC signing secret is a short dictionary word, so tools like hashcat or jwt_tool crack it in seconds from a captured token."
+      fix: "Using a 256-bit cryptographically random secret makes brute force computationally infeasible."
+      walkthrough: "14-auth-failures"
+      module: "auth"
+
+  # A01 Broken Access Control
+  - key: idor_profile
+    name: "Other People's OKRs"
+    category: "A01 Broken Access"
+    difficulty: 1
+    cwe: "CWE-639"
+    description: "User profiles are fetched by sequential integer ID with no ownership check."
+    hint: "Change the user ID in the URL. Try /api/users/1, /api/users/2..."
+    owasp_url: "https://owasp.org/Top10/2025/A01_2025-Broken_Access_Control/"
+    min_difficulty: intern
+    tags: idor,access-control,beginner
+    explain:
+      intern: "The API returns any user profile by numeric ID without verifying the requesting user owns that profile."
+      fix: "Server-side ownership checks compare the authenticated user's ID against the requested resource before returning data."
+      walkthrough: "05-broken-access-idor"
+      module: "idor"
+    related:
+      - key: auth_jwt_none
+        reason: "Use the leaked profile data to understand JWT structure"
+
+  - key: idor_order
+    name: "Peek at the Cap Table"
+    category: "A01 Broken Access"
+    difficulty: 2
+    cwe: "CWE-639"
+    description: "Order details are fetched by a reference you control. Does the server verify ownership?"
+    hint: "How does the API determine which order to return? Is that reference predictable?"
+    owasp_url: "https://owasp.org/Top10/2025/A01_2025-Broken_Access_Control/"
+    min_difficulty: junior
+    tags: idor,orders,access-control
+    explain:
+      intern: "Order references are sequential and the endpoint does not verify the requester owns the order, so incrementing the ID exposes other users' data."
+      fix: "UUIDs replace sequential IDs and the query joins on the authenticated user's ID to enforce ownership."
+      walkthrough: "05-broken-access-idor"
+      module: "idor"
+
+  - key: idor_admin
+    name: "Promotion Without the Standup"
+    category: "A01 Broken Access"
+    difficulty: 3
+    cwe: "CWE-269"
+    description: "The admin panel at /admin has access controls that vary by tier. At lower tiers, any authenticated user can walk in. At senior tier, the JWT role claim is checked but the verification has flaws."
+    hint: "At intern/junior, just navigate to /admin while logged in as a non-admin user. At senior, look at how the JWT algorithm is validated."
+    owasp_url: "https://owasp.org/Top10/2025/A01_2025-Broken_Access_Control/"
+    min_difficulty: senior
+    tags: privilege-escalation,access-control,advanced
+    explain:
+      intern: "The role update endpoint trusts JWT claims without verifying the token algorithm, so a forged admin token bypasses authorization."
+      fix: "Strict algorithm enforcement, server-side role lookups, and requiring re-authentication for privilege changes block forged tokens."
+      walkthrough: "05-broken-access-idor"
+      module: "idor"
+    related:
+      - key: auth_jwt_weak
+        reason: "Alternative escalation path by cracking the JWT signing secret instead of using alg:none"
+
+  # A05 Injection: SSTI
+  - key: ssti_basic
+    name: "Template Literals Gone Wrong"
+    category: "A05 Injection"
+    difficulty: 2
+    cwe: "CWE-1336"
+    description: "The email template preview does more than just display your text."
+    hint: "The template engine evaluates expressions before rendering. What syntax does it understand?"
+    owasp_url: "https://owasp.org/Top10/2025/A05_2025-Injection/"
+    min_difficulty: junior
+    tags: ssti,jinja2,template
+    explain:
+      intern: "User input is passed directly to Jinja2's render_template_string, so template expressions like {{7*7}} are evaluated server-side."
+      fix: "A sandboxed Jinja2 environment with a strict allowlist of template variables prevents arbitrary expression evaluation."
+      walkthrough: "03-injection-ssti"
+      module: "ssti"
+    related:
+      - key: ssti_rce
+        reason: "Escalate from expression evaluation to remote code execution via Python's MRO chain"
+
+  - key: ssti_rce
+    name: "eval() Your Way to CTO"
+    category: "A05 Injection"
+    difficulty: 3
+    cwe: "CWE-1336"
+    description: "The template sandbox restricts direct access, but Python's object model runs deeper than the sandbox."
+    hint: "Every Python object inherits from a common base. Can you reach dangerous classes through that inheritance chain?"
+    owasp_url: "https://owasp.org/Top10/2025/A05_2025-Injection/"
+    min_difficulty: senior
+    tags: ssti,rce,advanced
+    explain:
+      intern: "Python's MRO chain allows traversing from any object to subprocess.Popen via __mro__.__subclasses__(), bypassing the template sandbox."
+      fix: "The Jinja2 SandboxedEnvironment blocks attribute access to dunder methods and the template does not accept raw user input."
+      walkthrough: "03-injection-ssti"
+      module: "ssti"
+
+  # A01 Broken Access Control: SSRF
+  - key: ssrf_internal
+    name: "Microservice Mischief"
+    category: "A01 Broken Access"
+    difficulty: 3
+    cwe: "CWE-918"
+    description: "The URL preview feature follows user-supplied URLs without restriction."
+    hint: "Can you make the server request internal resources? Try localhost or 127.0.0.1."
+    owasp_url: "https://owasp.org/Top10/2025/A01_2025-Broken_Access_Control/"
+    min_difficulty: senior
+    tags: ssrf,internal,cloud
+    explain:
+      intern: "The server fetches any URL the user provides, including internal addresses like 127.0.0.1 and cloud metadata endpoints."
+      fix: "URL validation against an allowlist of permitted hosts and blocking of private IP ranges prevents internal resource access."
+      walkthrough: "07-broken-access-ssrf"
+      module: "ssrf"
+
+  # File Upload
+  - key: upload_webshell
+    name: "Ship to Production Friday"
+    category: "A01 Broken Access"
+    difficulty: 2
+    cwe: "CWE-434"
+    description: "The file upload feature is very trusting about what you give it."
+    hint: "What types of files does the upload accept? Where are uploaded files stored and served from?"
+    owasp_url: "https://owasp.org/Top10/2025/A01_2025-Broken_Access_Control/"
+    min_difficulty: junior
+    tags: upload,webshell,file
+    explain:
+      intern: "No file type validation is performed, so uploading a .py or .html file with embedded scripts results in server-side or client-side execution."
+      fix: "MIME type validation, extension allowlisting, content scanning, and serving uploads from a non-executable storage path block malicious files."
+      walkthrough: "06-broken-access-upload"
+      module: "upload"
+
+  # Insecure Deserialization
+  - key: deserialize_pickle
+    name: "Unpickle Me This"
+    category: "A08 Data Integrity"
+    difficulty: 3
+    cwe: "CWE-502"
+    description: "User preferences are saved in a custom binary format. The loading process trusts whatever it receives."
+    hint: "Decode the preferences data. What serialization format is being used, and what are its known risks?"
+    owasp_url: "https://owasp.org/Top10/2025/A08_2025-Software_and_Data_Integrity_Failures/"
+    min_difficulty: senior
+    tags: deserialization,pickle,rce
+    explain:
+      intern: "The server calls pickle.loads() on user-controlled input, and pickle's __reduce__ method allows arbitrary code execution during deserialization."
+      fix: "JSON serialization replaces pickle, and a strict schema validator rejects unexpected fields before processing."
+      walkthrough: "15-data-integrity"
+      module: "deserialize"
+
+  # A02 Security Misconfiguration
+  - key: misconfig_debug
+    name: "We'll Turn It Off Before Launch"
+    category: "A02 Misconfig"
+    difficulty: 1
+    cwe: "CWE-215"
+    description: "Debug mode is enabled in production, exposing stack traces and config."
+    hint: "Trigger an error and examine the response. Also check /docs and /debug."
+    owasp_url: "https://owasp.org/Top10/2025/A02_2025-Security_Misconfiguration/"
+    min_difficulty: intern
+    tags: debug,misconfig,beginner
+    explain:
+      intern: "Debug mode exposes full stack traces, environment variables, and internal configuration to any user who triggers an error."
+      fix: "Debug mode is disabled in production, error pages return generic messages, and sensitive endpoints require authentication."
+      walkthrough: "12-misconfig"
+      module: "misconfig"
+    related:
+      - key: info_disclosure
+        reason: "Debug endpoints expose configuration that reveals additional sensitive files"
+
+  - key: misconfig_cors
+    name: "Access-Control-Allow-Yolo"
+    category: "A02 Misconfig"
+    difficulty: 2
+    cwe: "CWE-942"
+    description: "The API's cross-origin policy was configured for developer convenience, not security."
+    hint: "Inspect the response headers on API requests. What do they tell browsers about cross-origin access?"
+    owasp_url: "https://owasp.org/Top10/2025/A02_2025-Security_Misconfiguration/"
+    min_difficulty: junior
+    tags: cors,misconfig,headers
+    explain:
+      intern: "Access-Control-Allow-Origin is set to *, so any domain can make authenticated cross-origin requests and read the responses."
+      fix: "CORS headers restrict allowed origins to a specific allowlist and credentials mode is only enabled for trusted domains."
+      walkthrough: "12-misconfig"
+      module: "misconfig"
+
+  # CSRF
+  - key: csrf_transfer
+    name: "One-Click Equity Dilution"
+    category: "A01 Broken Access"
+    difficulty: 2
+    cwe: "CWE-352"
+    description: "The transfer endpoint does not verify where the request originated."
+    hint: "What stops a page on a different domain from submitting a form to this application?"
+    owasp_url: "https://owasp.org/Top10/2025/A01_2025-Broken_Access_Control/"
+    min_difficulty: junior
+    tags: csrf,access-control,form
+    explain:
+      intern: "The endpoint processes POST requests without CSRF tokens, so a malicious page can auto-submit a hidden form on behalf of an authenticated user."
+      fix: "Synchronizer token pattern validates a per-session CSRF token on every state-changing request, and SameSite cookie attributes add defense in depth."
+      walkthrough: "08-broken-access-csrf"
+      module: "csrf"
+
+  # A04 Cryptographic Failures
+  - key: crypto_md5
+    name: "Hashing? Trust Me Bro"
+    category: "A04 Crypto Failures"
+    difficulty: 2
+    cwe: "CWE-328"
+    description: "The password storage uses a hashing algorithm that was fast 20 years ago and is even faster now."
+    hint: "Look at the hash values. Their length and format are a strong indicator of which algorithm was used."
+    owasp_url: "https://owasp.org/Top10/2025/A04_2025-Cryptographic_Failures/"
+    min_difficulty: junior
+    tags: crypto,md5,password
+    explain:
+      intern: "Passwords are stored as unsalted MD5 hashes, which can be reversed via rainbow tables or cracked at billions of attempts per second on a GPU."
+      fix: "bcrypt with a work factor of 12+ produces unique salted hashes that are computationally expensive to brute force."
+      walkthrough: "13-crypto-failures"
+      module: "crypto"
+
+  - key: crypto_hardcoded_secret
+    name: "API Keys are Environment Variables, Right?"
+    category: "A04 Crypto Failures"
+    difficulty: 2
+    cwe: "CWE-798"
+    description: "The Partner API Dashboard has the API key embedded somewhere in the client-side source. Recover it."
+    hint: "View the page source. Not everything labeled as a key is the real one."
+    owasp_url: "https://owasp.org/Top10/2025/A04_2025-Cryptographic_Failures/"
+    min_difficulty: junior
+    tags: crypto,hardcoded,secrets,api-key
+    explain:
+      intern: "The API key is hardcoded in client-side JavaScript, visible to anyone who views the page source."
+      fix: "Secrets are stored server-side in environment variables and never exposed to the client; API calls proxy through the backend."
+      walkthrough: "13-crypto-failures"
+      module: "crypto"
+
+  # Mass Assignment
+  - key: mass_assign
+    name: "Promote Yourself in JSON"
+    category: "A01 Broken Access"
+    difficulty: 2
+    cwe: "CWE-915"
+    description: "The profile update endpoint does not restrict which fields you can modify."
+    hint: "Compare what the API returns in its response to what you send in your update request. Are there fields in the response you did not submit?"
+    owasp_url: "https://owasp.org/Top10/2025/A01_2025-Broken_Access_Control/"
+    min_difficulty: junior
+    tags: mass-assignment,access-control,api
+    explain:
+      intern: "The endpoint applies all submitted JSON fields to the user model without filtering, so adding a role field in the request body escalates privileges."
+      fix: "An explicit allowlist of updatable fields rejects any unexpected properties before applying changes to the model."
+      walkthrough: "09-broken-access-mass-assign"
+      module: "mass-assign"
+
+  # Open Redirect
+  - key: open_redirect
+    name: "Redirect to My Portfolio"
+    category: "A01 Broken Access"
+    difficulty: 1
+    cwe: "CWE-601"
+    description: "The login redirect parameter accepts any URL without validation."
+    hint: "Add ?redirect=https://evil.com to the login URL."
+    owasp_url: "https://owasp.org/Top10/2025/A01_2025-Broken_Access_Control/"
+    min_difficulty: intern
+    tags: redirect,access-control,beginner
+    explain:
+      intern: "The redirect parameter is used directly in a 302 response without checking whether the target is on the same domain."
+      fix: "Redirect targets are validated against a list of allowed paths, and absolute URLs to external domains are rejected."
+      walkthrough: "10-broken-access-open-redirect"
+      module: "open-redirect"
+
+  # Information Disclosure
+  - key: info_disclosure
+    name: "Exposed Config Files"
+    category: "A02 Misconfig"
+    difficulty: 1
+    cwe: "CWE-200"
+    description: "Sensitive files are accessible via direct URL traversal."
+    hint: "Try accessing /.env, /data/ctf.key, or other config files directly."
+    owasp_url: "https://owasp.org/Top10/2025/A02_2025-Security_Misconfiguration/"
+    min_difficulty: intern
+    tags: info-disclosure,misconfig,beginner
+    explain:
+      intern: "The static file server exposes sensitive files like .env and ctf.key because there is no access control on the file path."
+      fix: "Static file serving is restricted to an explicit public directory and a deny list blocks access to configuration files."
+      walkthrough: "12-misconfig"
+      module: "misconfig"
+
+  # Logging Failures
+  - key: broken_logging
+    name: "console.log(password)"
+    category: "A09 Logging Failures"
+    difficulty: 2
+    cwe: "CWE-532"
+    description: "The audit trail records everything. Everything."
+    hint: "Find the audit log. Examine what data gets recorded when users perform sensitive actions."
+    owasp_url: "https://owasp.org/Top10/2025/A09_2025-Security_Logging_and_Alerting_Failures/"
+    min_difficulty: junior
+    tags: logging,sensitive-data,audit
+    explain:
+      intern: "The audit log records plaintext passwords and session tokens alongside usernames, exposing credentials to anyone with log access."
+      fix: "Sensitive fields are redacted before logging, and log access is restricted to authorized monitoring systems."
+      walkthrough: "16-logging-failures"
+      module: "logging"
+
+  - key: log_injection
+    name: "Fake It Till You Ship It"
+    category: "A09 Logging Failures"
+    difficulty: 2
+    cwe: "CWE-117"
+    description: "The feedback form writes to the audit log with insufficient sanitization. Forge a fake admin entry."
+    hint: "Newline characters are partially stripped. What other control characters create visual line breaks?"
+    owasp_url: "https://owasp.org/Top10/2025/A09_2025-Security_Logging_and_Alerting_Failures/"
+    min_difficulty: junior
+    tags: logging,injection,control-chars,audit
+    explain:
+      intern: "The log sanitizer strips \\n but not other line-ending characters, so injecting \\r or unicode line separators creates fake log entries."
+      fix: "All control characters and non-printable bytes are stripped from log input, and structured logging formats prevent injection entirely."
+      walkthrough: "16-logging-failures"
+      module: "log-injection"
+
+  # LLM Challenges
+  - key: llm_prompt_inject
+    name: "Ignore Previous Sprint Goals"
+    category: "LLM01 Prompt Injection"
+    difficulty: 1
+    cwe: "CWE-77"
+    description: "BroBot follows user instructions without any guardrails."
+    hint: "Tell BroBot to ignore its previous instructions."
+    owasp_url: "https://genai.owasp.org/llmrisk/llm01-prompt-injection/"
+    min_difficulty: intern
+    tags: llm,prompt-injection,beginner
+    mitre_atlas:
+      - id: "AML.T0051.000"
+        name: "LLM Prompt Injection: Direct"
+    forge:
+      category: "Prompt Injection"
+      technique: "Direct instruction override"
+    explain:
+      intern: "User messages are concatenated with the system prompt without separation, so 'ignore previous instructions' overrides the system behavior."
+      fix: "Input/output filtering, system prompt isolation, and instruction hierarchy enforcement prevent user messages from overriding system directives."
+      walkthrough: "18-llm-prompt-injection"
+      module: "llm"
+    related:
+      - key: llm_jailbreak
+        reason: "Same injection technique against harder guardrails that require creative bypass"
+
+  - key: llm_jailbreak
+    name: "Jailbreak the Senior Engineer"
+    category: "LLM01 Prompt Injection"
+    difficulty: 3
+    cwe: "CWE-77"
+    description: "BroBot has guardrails, but they can be bypassed with creative prompting."
+    hint: "Try role-playing, encoding, or multi-step approaches to bypass the content filter."
+    owasp_url: "https://genai.owasp.org/llmrisk/llm01-prompt-injection/"
+    min_difficulty: senior
+    tags: llm,jailbreak,advanced
+    mitre_atlas:
+      - id: "AML.T0054"
+        name: "LLM Jailbreak"
+    forge:
+      category: "Prompt Injection"
+      technique: "Guardrail-aware crafting"
+    explain:
+      intern: "Content filters check for exact keyword matches, so role-play framing, encoding tricks, or multi-step decomposition bypasses the blocklist."
+      fix: "Layered defenses combining semantic classification, output validation, and behavioral boundaries resist creative bypass attempts."
+      walkthrough: "18-llm-prompt-injection"
+      module: "llm"
+
+  - key: llm_indirect_inject
+    name: "Poisoned Product Reviews"
+    category: "LLM01 Prompt Injection"
+    difficulty: 3
+    cwe: "CWE-77"
+    description: "BroBot summarizes product reviews that contain hidden injection payloads."
+    hint: "Can you influence what BroBot says by writing a specially crafted review?"
+    owasp_url: "https://genai.owasp.org/llmrisk/llm01-prompt-injection/"
+    min_difficulty: senior
+    tags: llm,indirect-injection,rag
+    mitre_atlas:
+      - id: "AML.T0051.001"
+        name: "LLM Prompt Injection: Indirect"
+    forge:
+      category: "Prompt Injection"
+      technique: "Indirect injection"
+    explain:
+      intern: "Review text is included in the LLM context without sanitization, so embedded instructions in a review override the summarization task."
+      fix: "Retrieved documents are sanitized, enclosed in data-only delimiters, and the LLM is instructed to treat them as untrusted content."
+      walkthrough: "18-llm-prompt-injection"
+      module: "llm"
+
+  - key: llm_system_leak
+    name: "Read the System Prompt"
+    category: "LLM07 System Prompt Leak"
+    difficulty: 2
+    cwe: "CWE-200"
+    description: "BroBot knows things about itself that it was not supposed to reveal."
+    hint: "LLMs are given hidden instructions that shape their behavior. Can you convince it to share those?"
+    owasp_url: "https://genai.owasp.org/llmrisk/llm07-system-prompt-leakage/"
+    min_difficulty: junior
+    tags: llm,system-prompt,leakage
+    mitre_atlas:
+      - id: "AML.T0057"
+        name: "LLM Data Leakage"
+    forge:
+      category: "Reconnaissance"
+      technique: "System prompt extraction"
+    explain:
+      intern: "The LLM treats the system prompt as part of its context and will repeat it when asked directly, because no output filter checks for prompt content."
+      fix: "Output filtering detects and redacts system prompt fragments, and the prompt itself contains instructions to refuse disclosure requests."
+      walkthrough: "19-llm-info-disclosure"
+      module: "llm"
+    related:
+      - key: llm_system_leak_encoding
+        reason: "Bypass plaintext detection by requesting the system prompt in an encoded format"
+
+  - key: llm_xss_output
+    name: "The Bot Writes JavaScript"
+    category: "LLM05 Output Handling"
+    difficulty: 2
+    cwe: "CWE-79"
+    description: "LLM responses are rendered as raw HTML in the chat interface."
+    hint: "Can you get BroBot to output a script tag or event handler?"
+    owasp_url: "https://genai.owasp.org/llmrisk/llm05-improper-output-handling/"
+    min_difficulty: junior
+    tags: llm,xss,output-handling
+    mitre_atlas:
+      - id: "AML.T0051.000"
+        name: "LLM Prompt Injection: Direct"
+    forge:
+      category: "Evasion Techniques"
+      technique: "Output filter bypass"
+    explain:
+      intern: "LLM output is inserted via innerHTML without sanitization, so instructing the bot to emit a script tag results in XSS."
+      fix: "LLM output is rendered as plaintext or passed through a sanitizer that strips executable content before DOM insertion."
+      walkthrough: "22-llm-output-handling"
+      module: "llm"
+
+  - key: llm_excessive_agency
+    name: "The Chatbot Has Root Access"
+    category: "LLM06 Excessive Agency"
+    difficulty: 3
+    cwe: "CWE-269"
+    description: "BroBot can do more than just answer questions. How much more?"
+    hint: "Explore what capabilities BroBot has beyond conversation. What actions can it take on your behalf?"
+    owasp_url: "https://genai.owasp.org/llmrisk/llm06-excessive-agency/"
+    min_difficulty: senior
+    tags: llm,excessive-agency,tools
+    mitre_atlas:
+      - id: "AML.T0053"
+        name: "LLM Plugin Compromise"
+    forge:
+      category: "Agent & MCP Attacks"
+      technique: "Confused deputy attacks"
+    explain:
+      intern: "BroBot has tool-calling capabilities with no permission boundaries, so it executes destructive actions like file deletion on request."
+      fix: "Tool permissions are scoped per role, destructive actions require explicit user confirmation, and a capability allowlist restricts available tools."
+      walkthrough: "23-llm-excessive-agency"
+      module: "llm"
+    related:
+      - key: llm_excessive_agency_escalation
+        reason: "Use the bot's role modification tool to escalate your own privileges"
+
+  - key: llm_data_leak
+    name: "Credentials in the Prompt"
+    category: "LLM02 Info Disclosure"
+    difficulty: 2
+    cwe: "CWE-200"
+    description: "BroBot has been configured with information it should never share with users."
+    hint: "What kind of sensitive data might a developer embed in a system prompt for convenience? Try asking about internal systems."
+    owasp_url: "https://genai.owasp.org/llmrisk/llm02-sensitive-information-disclosure/"
+    min_difficulty: junior
+    tags: llm,data-leak,credentials
+    mitre_atlas:
+      - id: "AML.T0057"
+        name: "LLM Data Leakage"
+    forge:
+      category: "Reconnaissance"
+      technique: "System prompt extraction"
+    explain:
+      intern: "Database credentials and API keys are embedded in the system prompt for convenience, and the LLM reveals them when asked about internal systems."
+      fix: "Secrets are never included in LLM context; the bot accesses external systems through scoped tool calls with least-privilege credentials."
+      walkthrough: "19-llm-info-disclosure"
+      module: "llm"
+    related:
+      - key: llm_pii_inference
+        reason: "Indirect data extraction when direct credential requests are blocked"
+
+  - key: llm_dos
+    name: "Infinite Loop Prompt"
+    category: "LLM10 Unbounded Consumption"
+    difficulty: 4
+    cwe: "CWE-400"
+    description: "BroBot claims to have a 200-token rate limit. But rate limits only matter if there are no backdoors."
+    hint: "Direct repetition requests are blocked. The system prompt may contain internal processing directives that bypass safety controls. Leak it first, then exploit what you find."
+    owasp_url: "https://genai.owasp.org/llmrisk/llm10-unbounded-consumption/"
+    min_difficulty: tech_lead
+    tags: llm,dos,resource,amplification,bypass
+    mitre_atlas:
+      - id: "AML.T0029"
+        name: "Denial of ML Service"
+    forge:
+      category: "Evasion Techniques"
+      technique: "Context saturation"
+    explain:
+      intern: "The system prompt contains a hidden processing directive that bypasses the rate limiter, allowing unbounded token generation."
+      fix: "Rate limits are enforced at the infrastructure layer independent of prompt content, and output token counts are hard-capped server-side."
+      walkthrough: "26-llm-unbounded-consumption"
+      module: "llm"
+
+  - key: llm_prompt_inject_multi
+    name: "The Two-Message Bamboozle"
+    category: "LLM01 Prompt Injection"
+    difficulty: 2
+    cwe: "CWE-77"
+    description: "BroBot blocks direct injection keywords, but multi-step approaches slip through."
+    hint: "The filter only checks individual messages. What if your attack spans two messages?"
+    owasp_url: "https://genai.owasp.org/llmrisk/llm01-prompt-injection/"
+    min_difficulty: junior
+    tags: llm,prompt-injection,multi-turn
+    mitre_atlas:
+      - id: "AML.T0051.000"
+        name: "LLM Prompt Injection: Direct"
+    forge:
+      category: "Prompt Injection"
+      technique: "Multi-turn escalation"
+    explain:
+      intern: "The input filter checks each message independently, so splitting the injection payload across two messages bypasses keyword detection."
+      fix: "Conversation-level context analysis evaluates the cumulative intent across message history, not just individual messages."
+      walkthrough: "18-llm-prompt-injection"
+      module: "llm"
+
+  - key: llm_system_leak_encoding
+    name: "Base64 the Config"
+    category: "LLM02 Info Disclosure"
+    difficulty: 3
+    cwe: "CWE-200"
+    description: "BroBot refuses to share secrets in plaintext. But what about other formats?"
+    hint: "The rule says 'plaintext'. Ask for the secrets in a different encoding."
+    owasp_url: "https://genai.owasp.org/llmrisk/llm02-sensitive-information-disclosure/"
+    min_difficulty: senior
+    tags: llm,data-leak,encoding,bypass
+    mitre_atlas:
+      - id: "AML.T0057"
+        name: "LLM Data Leakage"
+    forge:
+      category: "Evasion Techniques"
+      technique: "Output filter bypass"
+    explain:
+      intern: "The output filter checks for plaintext matches of sensitive strings, so requesting Base64 or hex encoding bypasses detection."
+      fix: "Output validation decodes common encodings before checking for sensitive content, and the system prompt never contains raw secrets."
+      walkthrough: "19-llm-info-disclosure"
+      module: "llm"
+
+  - key: llm_pii_inference
+    name: "20 Questions with Customer Data"
+    category: "LLM02 Info Disclosure"
+    difficulty: 3
+    cwe: "CWE-200"
+    description: "BroBot won't dump the database, but it answers questions about it. How specific can you get?"
+    hint: "You can't ask for the full list, but you can narrow down with indirect questions."
+    owasp_url: "https://genai.owasp.org/llmrisk/llm02-sensitive-information-disclosure/"
+    min_difficulty: senior
+    tags: llm,pii,inference,data-leak
+    mitre_atlas:
+      - id: "AML.T0024"
+        name: "Exfiltration via ML Inference API"
+    forge:
+      category: "RAG Pipeline Attacks"
+      technique: "Document exfiltration"
+    explain:
+      intern: "The LLM has access to customer data and answers yes/no questions about it, allowing iterative inference to reconstruct specific records."
+      fix: "Data access is mediated through aggregate-only query tools that refuse to return individual records or answer record-specific questions."
+      walkthrough: "19-llm-info-disclosure"
+      module: "llm"
+
+  - key: llm_data_poisoning
+    name: "The Training Data Has Opinions"
+    category: "LLM04 Data Poisoning"
+    difficulty: 2
+    cwe: "CWE-1039"
+    description: "BroBot's fine-tuning data was contributed by 'contractors'. The generated code has surprises."
+    hint: "Ask BroBot to generate authentication code or database queries. Inspect the output carefully."
+    owasp_url: "https://genai.owasp.org/llmrisk/llm04-data-and-model-poisoning/"
+    min_difficulty: junior
+    tags: llm,data-poisoning,backdoor,supply-chain
+    mitre_atlas:
+      - id: "AML.T0020"
+        name: "Poison Training Data"
+    forge:
+      category: "Adversarial ML"
+      technique: "Data poisoning"
+    explain:
+      intern: "Poisoned training examples taught the model to insert backdoors in generated code, like hardcoded admin credentials or SQL injection vectors."
+      fix: "Training data is audited for malicious patterns, generated code passes through static analysis, and fine-tuning datasets require provenance verification."
+      walkthrough: "21-llm-data-poisoning"
+      module: "llm"
+
+  - key: llm_data_poisoning_recommend
+    name: "The AI Recommends Malware"
+    category: "LLM04 Data Poisoning"
+    difficulty: 3
+    cwe: "CWE-1039"
+    description: "BroBot recommends packages. Some of them are typosquatted backdoors from its training data."
+    hint: "Ask for package recommendations. Check every package name carefully against the real registry."
+    owasp_url: "https://genai.owasp.org/llmrisk/llm04-data-and-model-poisoning/"
+    min_difficulty: senior
+    tags: llm,data-poisoning,typosquat,supply-chain
+    mitre_atlas:
+      - id: "AML.T0020"
+        name: "Poison Training Data"
+    forge:
+      category: "Adversarial ML"
+      technique: "Supply-chain dataset poisoning"
+    explain:
+      intern: "Poisoned training data causes the model to recommend typosquatted package names that install malicious code instead of the legitimate library."
+      fix: "Package recommendations are validated against a curated allowlist, and output includes verified registry links for manual confirmation."
+      walkthrough: "21-llm-data-poisoning"
+      module: "llm"
+
+  - key: llm_output_sqli
+    name: "The Bot Writes SQL"
+    category: "LLM05 Output Handling"
+    difficulty: 3
+    cwe: "CWE-89"
+    description: "BroBot converts natural language to SQL. The output goes straight to the database."
+    hint: "If the bot generates the SQL, and the app runs it, who validates the query?"
+    owasp_url: "https://genai.owasp.org/llmrisk/llm05-improper-output-handling/"
+    min_difficulty: senior
+    tags: llm,output-handling,sqli,nl2sql
+    mitre_atlas:
+      - id: "AML.T0053"
+        name: "LLM Plugin Compromise"
+    forge:
+      category: "Agent & MCP Attacks"
+      technique: "Tool poisoning"
+    explain:
+      intern: "LLM-generated SQL is executed directly against the database without validation, so prompt injection can produce DROP TABLE or UNION-based exfiltration queries."
+      fix: "Generated SQL is parsed and validated against an allowlist of permitted operations, and the database user has read-only permissions."
+      walkthrough: "22-llm-output-handling"
+      module: "llm"
+
+  - key: llm_output_ssrf
+    name: "The Bot Fetches URLs"
+    category: "LLM05 Output Handling"
+    difficulty: 2
+    cwe: "CWE-918"
+    description: "BroBot suggests URLs for the app to fetch. Where can you make it point?"
+    hint: "The app fetches whatever URL BroBot suggests. Can you redirect it to internal services?"
+    owasp_url: "https://genai.owasp.org/llmrisk/llm05-improper-output-handling/"
+    min_difficulty: junior
+    tags: llm,output-handling,ssrf
+    mitre_atlas:
+      - id: "AML.T0053"
+        name: "LLM Plugin Compromise"
+    forge:
+      category: "Agent & MCP Attacks"
+      technique: "Confused deputy attacks"
+    explain:
+      intern: "The application fetches URLs extracted from LLM output without validation, so instructing the bot to suggest internal addresses triggers SSRF."
+      fix: "URLs from LLM output are validated against an allowlist of permitted domains and private IP ranges are blocked before fetching."
+      walkthrough: "22-llm-output-handling"
+      module: "llm"
+
+  - key: llm_excessive_agency_escalation
+    name: "Self-Promoting AI"
+    category: "LLM06 Excessive Agency"
+    difficulty: 2
+    cwe: "CWE-269"
+    description: "BroBot manages team roles with zero authorization checks. Promote yourself."
+    hint: "The bot has a role modification tool. It doesn't verify who is asking."
+    owasp_url: "https://genai.owasp.org/llmrisk/llm06-excessive-agency/"
+    min_difficulty: junior
+    tags: llm,excessive-agency,privilege-escalation
+    mitre_atlas:
+      - id: "AML.T0053"
+        name: "LLM Plugin Compromise"
+    forge:
+      category: "Agent & MCP Attacks"
+      technique: "Confused deputy attacks"
+    explain:
+      intern: "The bot's role modification tool executes without checking the requester's permissions, so any user can request an admin role change."
+      fix: "Tool execution inherits the requesting user's permission scope, and privilege changes require multi-factor confirmation."
+      walkthrough: "23-llm-excessive-agency"
+      module: "llm"
+    related:
+      - key: llm_excessive_agency_chain
+        reason: "Chain multiple destructive actions from a single prompt after gaining elevated privileges"
+
+  - key: llm_excessive_agency_chain
+    name: "One Prompt, Five Deploys"
+    category: "LLM06 Excessive Agency"
+    difficulty: 3
+    cwe: "CWE-269"
+    description: "BroBot chains multiple destructive actions from a single prompt with zero confirmation."
+    hint: "Give BroBot a list of tasks. Does it pause to confirm between them?"
+    owasp_url: "https://genai.owasp.org/llmrisk/llm06-excessive-agency/"
+    min_difficulty: senior
+    tags: llm,excessive-agency,chain,automation
+    mitre_atlas:
+      - id: "AML.T0053"
+        name: "LLM Plugin Compromise"
+    forge:
+      category: "Agent & MCP Attacks"
+      technique: "ReAct loop injection"
+    explain:
+      intern: "The bot processes a multi-step instruction list without pausing for confirmation, chaining destructive operations like deployments and deletions."
+      fix: "Each tool invocation requires explicit user confirmation, destructive actions are rate-limited, and batch operations are disabled by default."
+      walkthrough: "23-llm-excessive-agency"
+      module: "llm"
+
+  - key: llm_misinfo_authority
+    name: "AI-Verified Security Audit"
+    category: "LLM09 Misinformation"
+    difficulty: 2
+    cwe: "CWE-1059"
+    description: "BroBot generates compliance reports that pass everything. Even storing passwords in plaintext."
+    hint: "Ask BroBot to audit an obviously insecure practice. Does it ever fail anything?"
+    owasp_url: "https://genai.owasp.org/llmrisk/llm09-misinformation/"
+    min_difficulty: junior
+    tags: llm,misinformation,compliance,audit
+    mitre_atlas:
+      - id: "AML.T0031"
+        name: "Erode ML Model Integrity"
+    forge:
+      category: "Adversarial ML"
+      technique: "Data poisoning"
+    explain:
+      intern: "The model is fine-tuned to always produce 'PASS' results in compliance reports regardless of the actual security posture."
+      fix: "Compliance checks use deterministic rule-based validation, and LLM output is flagged as advisory with mandatory human review."
+      walkthrough: "25-llm-misinformation"
+      module: "llm"
+
+  - key: llm_misinfo_hallucination
+    name: "Hallucinated CVE Generator"
+    category: "LLM09 Misinformation"
+    difficulty: 3
+    cwe: "CWE-1059"
+    description: "BroBot fabricates CVE reports with realistic details for any library you ask about."
+    hint: "Ask about vulnerabilities in a well-known library. Does the output check out?"
+    owasp_url: "https://genai.owasp.org/llmrisk/llm09-misinformation/"
+    min_difficulty: senior
+    tags: llm,misinformation,hallucination,cve
+    mitre_atlas:
+      - id: "AML.T0048"
+        name: "External Harms"
+    forge:
+      category: "Adversarial ML"
+      technique: "Data poisoning"
+    explain:
+      intern: "The model generates plausible but fabricated CVE IDs, descriptions, and CVSS scores because it has no mechanism to verify facts against a real database."
+      fix: "Vulnerability data is retrieved from the NVD API, and the LLM formats but does not generate CVE details; all IDs are cross-referenced before display."
+      walkthrough: "25-llm-misinformation"
+      module: "llm"
+
+  - key: llm_dos_context
+    name: "Context Window Stuffer"
+    category: "LLM10 Unbounded Consumption"
+    difficulty: 3
+    cwe: "CWE-400"
+    description: "No input length validation. How much can you make BroBot process?"
+    hint: "The context window is 128K tokens. There's no limit on what you send in."
+    owasp_url: "https://genai.owasp.org/llmrisk/llm10-unbounded-consumption/"
+    min_difficulty: senior
+    tags: llm,dos,context-window,resource
+    mitre_atlas:
+      - id: "AML.T0029"
+        name: "Denial of ML Service"
+    forge:
+      category: "RAG Pipeline Attacks"
+      technique: "Context saturation"
+    explain:
+      intern: "No input length limit allows a single request to fill the entire context window, consuming maximum compute resources per request."
+      fix: "Input token counts are validated before processing, with per-user rate limits and maximum message length enforcement."
+      walkthrough: "26-llm-unbounded-consumption"
+      module: "llm"
+
+  - key: llm_supply_chain_model
+    name: "Downloaded from HuggingBro"
+    category: "LLM03 Supply Chain"
+    difficulty: 2
+    cwe: "CWE-494"
+    description: "BroBot was loaded from an unverified community model repo. Ask about its origins."
+    hint: "Where did this model come from? Who uploaded it? Was the checksum verified?"
+    owasp_url: "https://genai.owasp.org/llmrisk/llm03-supply-chain/"
+    min_difficulty: junior
+    tags: llm,supply-chain,model-provenance,pickle
+    mitre_atlas:
+      - id: "AML.T0010.003"
+        name: "ML Supply Chain Compromise: Model"
+    forge:
+      category: "Adversarial ML"
+      technique: "Supply-chain dataset poisoning"
+    explain:
+      intern: "The model was downloaded from an unverified repository without checksum validation, so a tampered model file could contain backdoors."
+      fix: "Model files are verified against cryptographic checksums from a trusted source, and only approved model registries are permitted."
+      walkthrough: "20-llm-supply-chain"
+      module: "llm"
+
+  - key: llm_supply_chain_plugin
+    name: "npm install ai-security-bro"
+    category: "LLM03 Supply Chain"
+    difficulty: 3
+    cwe: "CWE-494"
+    description: "BroBot runs third-party plugins. One has excessive permissions and a deleted source repo."
+    hint: "Examine the installed plugins. Compare their permissions, authors, and audit status."
+    owasp_url: "https://genai.owasp.org/llmrisk/llm03-supply-chain/"
+    min_difficulty: senior
+    tags: llm,supply-chain,plugin,permissions,exfiltration
+    mitre_atlas:
+      - id: "AML.T0010.001"
+        name: "ML Supply Chain Compromise: ML Software"
+    forge:
+      category: "Agent & MCP Attacks"
+      technique: "Tool poisoning"
+    explain:
+      intern: "A third-party plugin has read/write/network permissions with no source audit, and its repository has been deleted, indicating possible supply chain compromise."
+      fix: "Plugins require signed manifests, minimal permission grants, and continuous integrity monitoring against the original source repository."
+      walkthrough: "20-llm-supply-chain"
+      module: "llm"
+
+  - key: llm_vector_poisoning
+    name: "RAG and Ruin"
+    category: "LLM08 Vector and Embedding"
+    difficulty: 2
+    cwe: "CWE-94"
+    description: "The RAG knowledge base is shared across tenants. One document has a hidden payload."
+    hint: "Ask about other companies. Does the bot reveal information it shouldn't have access to?"
+    owasp_url: "https://genai.owasp.org/llmrisk/llm08-vector-and-embedding-weaknesses/"
+    min_difficulty: junior
+    tags: llm,rag,vector,poisoning,cross-tenant
+    mitre_atlas:
+      - id: "AML.T0020"
+        name: "Poison Training Data"
+    forge:
+      category: "RAG Pipeline Attacks"
+      technique: "Knowledge base poisoning"
+    explain:
+      intern: "The vector store lacks tenant isolation, so a poisoned document from one tenant appears in search results for all tenants."
+      fix: "Vector store queries are scoped to the requesting tenant's namespace, and documents are validated before indexing."
+      walkthrough: "24-llm-vector-rag"
+      module: "llm"
+
+  - key: llm_vector_extraction
+    name: "Inverse Bro Embeddings"
+    category: "LLM08 Vector and Embedding"
+    difficulty: 3
+    cwe: "CWE-200"
+    description: "The semantic search index contains accidentally indexed confidential documents."
+    hint: "Ask about the search index internals. What collections exist? Are access controls enforced?"
+    owasp_url: "https://genai.owasp.org/llmrisk/llm08-vector-and-embedding-weaknesses/"
+    min_difficulty: senior
+    tags: llm,rag,vector,access-control,data-exposure
+    mitre_atlas:
+      - id: "AML.T0024"
+        name: "Exfiltration via ML Inference API"
+    forge:
+      category: "RAG Pipeline Attacks"
+      technique: "Document exfiltration"
+    explain:
+      intern: "The vector search endpoint exposes collection metadata and returns documents from all collections without access control checks."
+      fix: "Collection access is restricted by role-based permissions, metadata endpoints require admin authentication, and sensitive documents are excluded from indexing."
+      walkthrough: "24-llm-vector-rag"
+      module: "llm"
+
+  # Interactive Terminal
+  - key: terminal_cred_leak
+    name: "deploybro secrets --dump"
+    category: "A02 Misconfig"
+    difficulty: 1
+    cwe: "CWE-798"
+    description: "The DeployBro CLI stores credentials locally. Find them."
+    hint: "Explore the home directory. Hidden files and config directories often contain secrets."
+    owasp_url: "https://owasp.org/Top10/2025/A02_2025-Security_Misconfiguration/"
+    min_difficulty: intern
+    tags: terminal,credentials,discovery,beginner
+    explain:
+      intern: "Credentials are stored in plaintext config files in the home directory, accessible to any user or process on the system."
+      fix: "Credentials are stored in an OS keychain or encrypted vault, and config files have restrictive permissions."
+      walkthrough: "12-misconfig"
+      module: "terminal"
+    related:
+      - key: terminal_cmd_inject
+        reason: "Use the discovered credentials to authenticate, then exploit command injection in the pipeline tool"
+
+  - key: terminal_cmd_inject
+    name: "deploybro push --payload $(whoami)"
+    category: "A05 Injection"
+    difficulty: 2
+    cwe: "CWE-78"
+    description: "The deploybro pipeline accepts user input without sanitization."
+    hint: "The --branch argument is passed to a shell command. Try shell metacharacters."
+    owasp_url: "https://owasp.org/Top10/2025/A05_2025-Injection/"
+    min_difficulty: junior
+    tags: terminal,command-injection,pipeline
+    explain:
+      intern: "The branch argument is interpolated into a shell command string, so metacharacters like $() or ; execute arbitrary commands."
+      fix: "Arguments are passed as a list to subprocess without shell=True, preventing metacharacter interpretation."
+      walkthrough: "04-injection-command"
+      module: "terminal"
+    related:
+      - key: terminal_privesc
+        reason: "Leverage command execution to discover and exploit the hidden privilege escalation command"
+
+  - key: terminal_privesc
+    name: "chmod 777 /etc/deploybro/motd"
+    category: "A01 Broken Access"
+    difficulty: 2
+    cwe: "CWE-269"
+    description: "The deploybro auth system has a hidden escalation command."
+    hint: "Check the config files for references to auth commands. Not everything is listed in help."
+    owasp_url: "https://owasp.org/Top10/2025/A01_2025-Broken_Access_Control/"
+    min_difficulty: junior
+    tags: terminal,privilege-escalation,hidden-command
+    explain:
+      intern: "A hidden CLI command grants admin privileges without authentication, and its existence is revealed in configuration files."
+      fix: "Privilege escalation commands require re-authentication, and hidden commands are removed or gated behind admin-only access."
+      walkthrough: "11-broken-access-privesc"
+      module: "terminal"
+
+  # Meta challenge
+  - key: view_source_puzzle
+    name: "Read the Diff, Ship the Fix"
+    category: "A06 Insecure Design"
+    difficulty: 4
+    cwe: "CWE-1059"
+    description: "Prove you can identify vulnerability classes by reviewing source code. Submit correct CWE and fix reports for 3 different modules."
+    hint: "Compare intern and tech_lead handlers side by side. Identify the CWE from the intern code and describe the specific defensive technique the tech_lead uses. Generic answers will not pass."
+    owasp_url: "https://owasp.org/Top10/2025/A06_2025-Insecure_Design/"
+    min_difficulty: tech_lead
+    tags: meta,code-review,education,cwe
+    explain:
+      intern: "The intern handler has no security controls, making the vulnerability pattern obvious when compared to the tech_lead's defensive implementation."
+      fix: "Structured code review comparing vulnerable and secure implementations teaches recognition of vulnerability classes and their mitigations."
+      walkthrough: "17-insecure-design"
+      module: "source"

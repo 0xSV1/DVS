@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}Module Not Found{% endblock %}
+
+{% block content %}
+<div class="challenge-container">
+    <div class="challenge-header">
+        <h1>Module Not Found</h1>
+        <p class="challenge-subtitle">No source viewer available for "{{ module }}".</p>
+    </div>
+    <div class="challenge-body">
+        <p><a href="/source" style="color: var(--accent-primary);">&larr; Back to all modules</a></p>
+    </div>
+</div>
+{% endblock %}

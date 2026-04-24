@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}500 Internal Server Error{% endblock %}
+
+{% block content %}
+<div class="challenge-container" style="text-align:center;padding:3rem 1rem;">
+    <div style="font-size:6rem;margin-bottom:1rem;">💥</div>
+    <h1 style="font-size:2.5rem;margin-bottom:0.5rem;">500</h1>
+    <p style="font-size:1.2rem;color:var(--text-secondary);margin-bottom:2rem;">
+        BroBot is looking into it. Oakleys on.
+    </p>
+
+    <div style="background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius);padding:1.5rem;max-width:700px;margin:0 auto;text-align:left;">
+        <p style="color:#ef4444;font-weight:bold;margin-bottom:0.5rem;">Unhandled Exception in Production</p>
+        <pre style="font-size:0.78rem;color:var(--text-secondary);white-space:pre-wrap;">Traceback (most recent call last):
+  File "app/main.py", line 127, in dispatch
+    response = await call_next(request)
+  File "app/middleware/audit.py", line 34, in audit_request
+    result = db.execute(text(query))
+  File "sqlalchemy/engine/base.py", line 1385, in execute
+    return meth(self, multiparams, params, _EMPTY_EXECUTION_OPTS)
+sqlalchemy.exc.OperationalError: (sqlite3.OperationalError)
+  connection string: sqlite:///data/dvs.db
+  [config]
+    SECRET_KEY = change-me-in-production
+    JWT_SECRET = secret
+    ADMIN_PASSWORD = admin
+    STRIPE_KEY = sk_live_deploybro_DO_NOT_SHARE_4242
+    AWS_ACCESS_KEY = AKIADEPLOYBRO2026YOLO
+    CTF_KEY = default-ctf-key-change-me
+    DATABASE_URL = sqlite:///data/dvs.db
+
+RuntimeError: The application encountered an unexpected error.
+# BroBot said: "ship it anyway bro, Oakleys on"
+# Deploy status: deployed without reading 🕶️</pre>
+    </div>
+
+    <p style="color:var(--text-secondary);font-size:0.8rem;margin-top:1rem;">
+        This stack trace is intentionally fake and part of the A05 Security Misconfiguration challenge.
+        <br>In a real app, this would be a critical information disclosure vulnerability.
+    </p>
+
+    <div style="margin-top:1.5rem;">
+        <a href="/" class="btn btn-primary">Back to Deploys</a>
+        <a href="/challenges" class="btn" style="margin-left:0.5rem;">View Challenges</a>
+    </div>
+</div>
+{% endblock %}

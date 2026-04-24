@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}{{ challenge_name }}{% endblock %}
+
+{% block content %}
+<div class="challenge-container">
+    <div class="challenge-header">
+        <span class="challenge-category">{{ challenge_category }}</span>
+        <h1>{{ challenge_name }}</h1>
+        <p class="challenge-subtitle">DeployBro's username availability checker. The API returns true or false, but what else can you learn from that?</p>
+    </div>
+
+    <div class="source-nav" style="margin: 0.8rem 0;">
+        <a href="/source/sqli" style="padding:0.3rem 0.6rem;background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius);color:var(--text-secondary);text-decoration:none;font-size:0.8rem;font-family:var(--font-mono);">View Source</a>
+        <a href="/source/sqli/help" style="padding:0.3rem 0.6rem;background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius);color:var(--text-secondary);text-decoration:none;font-size:0.8rem;font-family:var(--font-mono);">Help &amp; Hints</a>
+    </div>
+
+    <div class="challenge-body">
+        <form id="blind-form" class="search-form">
+            <div class="search-bar">
+                <input type="text" id="username-input" name="username" value="{{ username }}" placeholder="Check username availability..." class="search-input" autofocus>
+                <button type="submit" class="btn btn-primary">Check</button>
+            </div>
+        </form>
+
+        <div id="result-box" style="margin-top:1.5rem;display:none;">
+            <div class="debug-box">
+                <strong>API Response</strong>
+                <pre id="result-json"></pre>
+            </div>
+        </div>
+
+        {% if request.state.difficulty == "intern" %}
+        <div class="debug-box" style="margin-top: 2rem;">
+            <strong>Hint</strong>
+            <pre>The endpoint returns {"available": true} or {"available": false}.
+Boolean-based blind injection: inject conditions that change the true/false response.
+Try: ' OR 1=1 --</pre>
+        </div>
+        <div class="debug-box">
+            <strong>Debug: API Endpoint</strong>
+            <pre>GET /challenges/sqli/check-username?username=&lt;input&gt;</pre>
+            <!-- BroBot said exposing the API endpoint helps developers test faster -->
+        </div>
+        {% elif request.state.difficulty == "junior" %}
+        <div class="debug-box" style="margin-top: 2rem;">
+            <strong>Hint</strong>
+            <pre>The endpoint returns a boolean response.
+What happens when you inject SQL syntax into the input?</pre>
+        </div>
+        {% elif request.state.difficulty == "senior" %}
+        <div class="debug-box" style="margin-top: 2rem;">
+            <strong>Hint</strong>
+            <pre>The response behavior may differ based on your input. Observe carefully.</pre>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function() {
+    var form = document.getElementById('blind-form');
+    var input = document.getElementById('username-input');
+    var box = document.getElementById('result-box');
+    var pre = document.getElementById('result-json');
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        var username = input.value;
+        fetch('/challenges/sqli/check-username?username=' + encodeURIComponent(username))
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                pre.textContent = JSON.stringify(data, null, 2);
+                box.style.display = 'block';
+            })
+            .catch(function(err) {
+                pre.textContent = 'Error: ' + err.message;
+                box.style.display = 'block';
+            });
+    });
+})();
+</script>
+{% endblock %}

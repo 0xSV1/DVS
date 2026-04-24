@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}404 Not Found{% endblock %}
+
+{% block content %}
+<div class="challenge-container" style="text-align:center;padding:3rem 1rem;">
+    <div style="font-size:6rem;margin-bottom:1rem;">🚧</div>
+    <h1 style="font-size:2.5rem;margin-bottom:0.5rem;">404</h1>
+    <p style="font-size:1.2rem;color:var(--text-secondary);margin-bottom:2rem;">
+        This feature was supposed to ship in Sprint 2. BroBot said it was done.
+    </p>
+
+    <div style="background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius);padding:1.5rem;max-width:600px;margin:0 auto;text-align:left;">
+        <p style="color:var(--text-secondary);font-size:0.85rem;margin-bottom:0.5rem;">// TODO: implement this page</p>
+        <pre style="font-size:0.8rem;color:var(--text-secondary);white-space:pre-wrap;">Traceback (most recent call last):
+  File "app/routes/pages.py", line 42, in render_page
+    template = loader.get_template(page_name)
+  File "app/core/template_engine.py", line 18, in get_template
+    raise TemplateNotFoundError(f"Template '{page_name}' not found")
+app.core.exceptions.TemplateNotFoundError: Template not found
+
+# BroBot note: "I'll fix this after we close the Series A, bro"
+# Priority: P4 (after the techno set at the launch party)</pre>
+    </div>
+
+    <div style="margin-top:2rem;">
+        <a href="/" class="btn btn-primary">Back to Deploys</a>
+        <a href="/challenges" class="btn" style="margin-left:0.5rem;">View Challenges</a>
+    </div>
+</div>
+{% endblock %}

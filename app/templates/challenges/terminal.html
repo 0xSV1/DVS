@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}{{ challenge_name }}{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="/static/css/terminal.css">
+{% endblock %}
+
+{% block content %}
+<div class="challenge-container terminal-wrapper">
+    {# OG + Toxic header #}
+    <div class="challenge-header classic-only">
+        <span class="challenge-category">{{ challenge_category }}</span>
+        <h1>{{ challenge_name }}</h1>
+        <p class="challenge-subtitle">The DeployBro CLI: Ship First, Ask Questions Never. Explore the developer workbench and find what they left behind.</p>
+    </div>
+    <div class="challenge-header toxic-only">
+        <span class="challenge-category">{{ challenge_category }}</span>
+        <h1>{{ challenge_name }}</h1>
+        <p class="challenge-subtitle">The DeployBro CLI: Ship First, Ask Questions Never. Explore the developer workbench and find what they left behind.</p>
+    </div>
+
+    {# Corpo header #}
+    <div class="challenge-header corpo-only">
+        <span class="challenge-category" style="color:var(--accent-primary);">Enterprise Cloud Console</span>
+        <h1 style="font-family:var(--font-display);">DeployBro Platform Terminal</h1>
+        <p class="challenge-subtitle" style="color:var(--text-secondary);">Access the DeployBro Deployment Management Platform. Interact with your cloud infrastructure through our enterprise-grade command line interface.</p>
+    </div>
+
+    <div class="source-nav" style="margin: 0.8rem 0;">
+        <a href="/source/terminal" style="padding:0.3rem 0.6rem;background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius);color:var(--text-secondary);text-decoration:none;font-size:0.8rem;font-family:var(--font-mono);">View Source</a>
+    </div>
+
+    <div class="terminal-info">
+        <div class="terminal-challenges">
+            <span class="terminal-challenge-tag">CWE-798: Hardcoded Credentials</span>
+            <span class="terminal-challenge-tag">CWE-78: Command Injection</span>
+            <span class="terminal-challenge-tag">CWE-269: Privilege Escalation</span>
+        </div>
+    </div>
+
+    <div class="terminal-window">
+        <div class="terminal-header">
+            <span class="terminal-dot red"></span>
+            <span class="terminal-dot yellow"></span>
+            <span class="terminal-dot green"></span>
+            <span class="terminal-title classic-only">deploybro@devbox: ~</span>
+            <span class="terminal-title toxic-only">deploybro@devbox: ~</span>
+            <span class="terminal-title corpo-only" style="display:none;">DeployBro Cloud Shell v4.2.0 | Region: us-east-1 | Tier: Enterprise</span>
+        </div>
+        <div class="terminal-body" id="terminal-body">
+            <div class="terminal-input-line">
+                <span class="terminal-prompt">
+                    <span class="user">deploybro</span><span class="separator">:</span><span class="path" id="prompt-path">~</span><span class="dollar">$ </span>
+                </span>
+                <input type="text" class="terminal-input" id="terminal-input" autocomplete="off" spellcheck="false" autofocus placeholder="Type a command...">
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    window.__DVS_FS = {{ filesystem_json | safe }};
+    window.__DVS_SHOW_HIDDEN = "{{ show_hidden_default }}";
+</script>
+<script src="/static/js/terminal.js"></script>
+{% endblock %}
