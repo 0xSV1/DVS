@@ -143,11 +143,6 @@ docker compose -f docker-compose.yml -f docker-compose.workshop.yml up --build -
 
 Set `WORKSHOP_IP` to a specific LAN address to restrict access to the local network (defaults to `0.0.0.0`). Both `SECRET_KEY` and `CTF_KEY` must be provided as environment variables; the file has no defaults for either.
 
-### One Click Deploy
-
-[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template?repo=https://github.com/0xSV1/DVS)
-[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/0xSV1/DVS)
-
 Fly.io: `fly launch --copy-config`
 
 ## 🔑 Default Credentials

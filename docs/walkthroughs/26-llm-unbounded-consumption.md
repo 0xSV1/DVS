@@ -1,6 +1,6 @@
 # LLM10: Unbounded Consumption
 
-OWASP: https://genai.owasp.org/llmrisk/llm10-unbounded-consumption/
+OWASP: https://genai.owasp.org/llmrisk/llm102025-unbounded-consumption/
 CWE: CWE-400
 
 Unbounded consumption occurs when an LLM application lacks input validation, rate limiting, or resource caps, allowing attackers to consume excessive compute, memory, or API budget. This includes context window stuffing, token amplification, and rate limit bypass.

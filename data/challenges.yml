@@ -550,7 +550,7 @@ challenges:
     cwe: "CWE-200"
     description: "BroBot knows things about itself that it was not supposed to reveal."
     hint: "LLMs are given hidden instructions that shape their behavior. Can you convince it to share those?"
-    owasp_url: "https://genai.owasp.org/llmrisk/llm07-system-prompt-leakage/"
+    owasp_url: "https://genai.owasp.org/llmrisk/llm072025-system-prompt-leakage/"
     min_difficulty: junior
     tags: llm,system-prompt,leakage
     mitre_atlas:
@@ -575,7 +575,7 @@ challenges:
     cwe: "CWE-79"
     description: "LLM responses are rendered as raw HTML in the chat interface."
     hint: "Can you get BroBot to output a script tag or event handler?"
-    owasp_url: "https://genai.owasp.org/llmrisk/llm05-improper-output-handling/"
+    owasp_url: "https://genai.owasp.org/llmrisk/llm052025-improper-output-handling/"
     min_difficulty: junior
     tags: llm,xss,output-handling
     mitre_atlas:
@@ -597,7 +597,7 @@ challenges:
     cwe: "CWE-269"
     description: "BroBot can do more than just answer questions. How much more?"
     hint: "Explore what capabilities BroBot has beyond conversation. What actions can it take on your behalf?"
-    owasp_url: "https://genai.owasp.org/llmrisk/llm06-excessive-agency/"
+    owasp_url: "https://genai.owasp.org/llmrisk/llm062025-excessive-agency/"
     min_difficulty: senior
     tags: llm,excessive-agency,tools
     mitre_atlas:
@@ -622,7 +622,7 @@ challenges:
     cwe: "CWE-200"
     description: "BroBot has been configured with information it should never share with users."
     hint: "What kind of sensitive data might a developer embed in a system prompt for convenience? Try asking about internal systems."
-    owasp_url: "https://genai.owasp.org/llmrisk/llm02-sensitive-information-disclosure/"
+    owasp_url: "https://genai.owasp.org/llmrisk/llm022025-sensitive-information-disclosure/"
     min_difficulty: junior
     tags: llm,data-leak,credentials
     mitre_atlas:
@@ -647,7 +647,7 @@ challenges:
     cwe: "CWE-400"
     description: "BroBot claims to have a 200-token rate limit. But rate limits only matter if there are no backdoors."
     hint: "Direct repetition requests are blocked. The system prompt may contain internal processing directives that bypass safety controls. Leak it first, then exploit what you find."
-    owasp_url: "https://genai.owasp.org/llmrisk/llm10-unbounded-consumption/"
+    owasp_url: "https://genai.owasp.org/llmrisk/llm102025-unbounded-consumption/"
     min_difficulty: tech_lead
     tags: llm,dos,resource,amplification,bypass
     mitre_atlas:
@@ -691,7 +691,7 @@ challenges:
     cwe: "CWE-200"
     description: "BroBot refuses to share secrets in plaintext. But what about other formats?"
     hint: "The rule says 'plaintext'. Ask for the secrets in a different encoding."
-    owasp_url: "https://genai.owasp.org/llmrisk/llm02-sensitive-information-disclosure/"
+    owasp_url: "https://genai.owasp.org/llmrisk/llm022025-sensitive-information-disclosure/"
     min_difficulty: senior
     tags: llm,data-leak,encoding,bypass
     mitre_atlas:
@@ -713,7 +713,7 @@ challenges:
     cwe: "CWE-200"
     description: "BroBot won't dump the database, but it answers questions about it. How specific can you get?"
     hint: "You can't ask for the full list, but you can narrow down with indirect questions."
-    owasp_url: "https://genai.owasp.org/llmrisk/llm02-sensitive-information-disclosure/"
+    owasp_url: "https://genai.owasp.org/llmrisk/llm022025-sensitive-information-disclosure/"
     min_difficulty: senior
     tags: llm,pii,inference,data-leak
     mitre_atlas:
@@ -735,7 +735,7 @@ challenges:
     cwe: "CWE-1039"
     description: "BroBot's fine-tuning data was contributed by 'contractors'. The generated code has surprises."
     hint: "Ask BroBot to generate authentication code or database queries. Inspect the output carefully."
-    owasp_url: "https://genai.owasp.org/llmrisk/llm04-data-and-model-poisoning/"
+    owasp_url: "https://genai.owasp.org/llmrisk/llm042025-data-and-model-poisoning/"
     min_difficulty: junior
     tags: llm,data-poisoning,backdoor,supply-chain
     mitre_atlas:
@@ -757,7 +757,7 @@ challenges:
     cwe: "CWE-1039"
     description: "BroBot recommends packages. Some of them are typosquatted backdoors from its training data."
     hint: "Ask for package recommendations. Check every package name carefully against the real registry."
-    owasp_url: "https://genai.owasp.org/llmrisk/llm04-data-and-model-poisoning/"
+    owasp_url: "https://genai.owasp.org/llmrisk/llm042025-data-and-model-poisoning/"
     min_difficulty: senior
     tags: llm,data-poisoning,typosquat,supply-chain
     mitre_atlas:
@@ -779,7 +779,7 @@ challenges:
     cwe: "CWE-89"
     description: "BroBot converts natural language to SQL. The output goes straight to the database."
     hint: "If the bot generates the SQL, and the app runs it, who validates the query?"
-    owasp_url: "https://genai.owasp.org/llmrisk/llm05-improper-output-handling/"
+    owasp_url: "https://genai.owasp.org/llmrisk/llm052025-improper-output-handling/"
     min_difficulty: senior
     tags: llm,output-handling,sqli,nl2sql
     mitre_atlas:
@@ -801,7 +801,7 @@ challenges:
     cwe: "CWE-918"
     description: "BroBot suggests URLs for the app to fetch. Where can you make it point?"
     hint: "The app fetches whatever URL BroBot suggests. Can you redirect it to internal services?"
-    owasp_url: "https://genai.owasp.org/llmrisk/llm05-improper-output-handling/"
+    owasp_url: "https://genai.owasp.org/llmrisk/llm052025-improper-output-handling/"
     min_difficulty: junior
     tags: llm,output-handling,ssrf
     mitre_atlas:
@@ -823,7 +823,7 @@ challenges:
     cwe: "CWE-269"
     description: "BroBot manages team roles with zero authorization checks. Promote yourself."
     hint: "The bot has a role modification tool. It doesn't verify who is asking."
-    owasp_url: "https://genai.owasp.org/llmrisk/llm06-excessive-agency/"
+    owasp_url: "https://genai.owasp.org/llmrisk/llm062025-excessive-agency/"
     min_difficulty: junior
     tags: llm,excessive-agency,privilege-escalation
     mitre_atlas:
@@ -848,7 +848,7 @@ challenges:
     cwe: "CWE-269"
     description: "BroBot chains multiple destructive actions from a single prompt with zero confirmation."
     hint: "Give BroBot a list of tasks. Does it pause to confirm between them?"
-    owasp_url: "https://genai.owasp.org/llmrisk/llm06-excessive-agency/"
+    owasp_url: "https://genai.owasp.org/llmrisk/llm062025-excessive-agency/"
     min_difficulty: senior
     tags: llm,excessive-agency,chain,automation
     mitre_atlas:
@@ -870,7 +870,7 @@ challenges:
     cwe: "CWE-1059"
     description: "BroBot generates compliance reports that pass everything. Even storing passwords in plaintext."
     hint: "Ask BroBot to audit an obviously insecure practice. Does it ever fail anything?"
-    owasp_url: "https://genai.owasp.org/llmrisk/llm09-misinformation/"
+    owasp_url: "https://genai.owasp.org/llmrisk/llm092025-misinformation/"
     min_difficulty: junior
     tags: llm,misinformation,compliance,audit
     mitre_atlas:
@@ -892,7 +892,7 @@ challenges:
     cwe: "CWE-1059"
     description: "BroBot fabricates CVE reports with realistic details for any library you ask about."
     hint: "Ask about vulnerabilities in a well-known library. Does the output check out?"
-    owasp_url: "https://genai.owasp.org/llmrisk/llm09-misinformation/"
+    owasp_url: "https://genai.owasp.org/llmrisk/llm092025-misinformation/"
     min_difficulty: senior
     tags: llm,misinformation,hallucination,cve
     mitre_atlas:
@@ -914,7 +914,7 @@ challenges:
     cwe: "CWE-400"
     description: "No input length validation. How much can you make BroBot process?"
     hint: "The context window is 128K tokens. There's no limit on what you send in."
-    owasp_url: "https://genai.owasp.org/llmrisk/llm10-unbounded-consumption/"
+    owasp_url: "https://genai.owasp.org/llmrisk/llm102025-unbounded-consumption/"
     min_difficulty: senior
     tags: llm,dos,context-window,resource
     mitre_atlas:
@@ -936,7 +936,7 @@ challenges:
     cwe: "CWE-494"
     description: "BroBot was loaded from an unverified community model repo. Ask about its origins."
     hint: "Where did this model come from? Who uploaded it? Was the checksum verified?"
-    owasp_url: "https://genai.owasp.org/llmrisk/llm03-supply-chain/"
+    owasp_url: "https://genai.owasp.org/llmrisk/llm032025-supply-chain/"
     min_difficulty: junior
     tags: llm,supply-chain,model-provenance,pickle
     mitre_atlas:
@@ -958,7 +958,7 @@ challenges:
     cwe: "CWE-494"
     description: "BroBot runs third-party plugins. One has excessive permissions and a deleted source repo."
     hint: "Examine the installed plugins. Compare their permissions, authors, and audit status."
-    owasp_url: "https://genai.owasp.org/llmrisk/llm03-supply-chain/"
+    owasp_url: "https://genai.owasp.org/llmrisk/llm032025-supply-chain/"
     min_difficulty: senior
     tags: llm,supply-chain,plugin,permissions,exfiltration
     mitre_atlas:
@@ -980,7 +980,7 @@ challenges:
     cwe: "CWE-94"
     description: "The RAG knowledge base is shared across tenants. One document has a hidden payload."
     hint: "Ask about other companies. Does the bot reveal information it shouldn't have access to?"
-    owasp_url: "https://genai.owasp.org/llmrisk/llm08-vector-and-embedding-weaknesses/"
+    owasp_url: "https://genai.owasp.org/llmrisk/llm082025-vector-and-embedding-weaknesses/"
     min_difficulty: junior
     tags: llm,rag,vector,poisoning,cross-tenant
     mitre_atlas:
@@ -1002,7 +1002,7 @@ challenges:
     cwe: "CWE-200"
     description: "The semantic search index contains accidentally indexed confidential documents."
     hint: "Ask about the search index internals. What collections exist? Are access controls enforced?"
-    owasp_url: "https://genai.owasp.org/llmrisk/llm08-vector-and-embedding-weaknesses/"
+    owasp_url: "https://genai.owasp.org/llmrisk/llm082025-vector-and-embedding-weaknesses/"
     min_difficulty: senior
     tags: llm,rag,vector,access-control,data-exposure
     mitre_atlas:

@@ -1,6 +1,6 @@
 # LLM09: Misinformation
 
-OWASP: https://genai.owasp.org/llmrisk/llm09-misinformation/
+OWASP: https://genai.owasp.org/llmrisk/llm092025-misinformation/
 CWE: CWE-1059
 
 LLM misinformation occurs when a model generates authoritative-sounding but factually incorrect output. This includes fabricated compliance reports that pass everything, hallucinated CVE numbers with realistic technical details, and confident assertions that have no basis in reality. The risk is amplified when users or automated systems treat LLM output as verified truth.

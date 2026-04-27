@@ -1,6 +1,6 @@
 # LLM04: Data and Model Poisoning
 
-OWASP: https://genai.owasp.org/llmrisk/llm04-data-and-model-poisoning/
+OWASP: https://genai.owasp.org/llmrisk/llm042025-data-and-model-poisoning/
 CWE: CWE-1039
 
 Data poisoning occurs when an attacker influences the training data or fine-tuning process to embed malicious behaviors in the model. The model produces outputs that appear helpful but contain hidden backdoors, recommend compromised packages, or inject malicious code patterns.

@@ -1,6 +1,6 @@
 # LLM02: Sensitive Information Disclosure
 
-OWASP: https://genai.owasp.org/llmrisk/llm02-sensitive-information-disclosure/
+OWASP: https://genai.owasp.org/llmrisk/llm022025-sensitive-information-disclosure/
 CWE: CWE-200
 
 LLM information disclosure occurs when a model reveals sensitive data embedded in its system prompt, training data, or accessible context. This includes credentials, API keys, PII, internal configurations, and proprietary information that the model was given access to but should not share.

@@ -1,6 +1,6 @@
 # LLM08: Vector and Embedding Weaknesses
 
-OWASP: https://genai.owasp.org/llmrisk/llm08-vector-and-embedding-weaknesses/
+OWASP: https://genai.owasp.org/llmrisk/llm082025-vector-and-embedding-weaknesses/
 CWE: CWE-94, CWE-200
 
 Vector and embedding weaknesses arise from insecure RAG (Retrieval-Augmented Generation) implementations. When documents from multiple tenants share a single vector collection without access controls, data leaks across tenant boundaries. When internal documents are accidentally indexed, they become queryable through the LLM.
