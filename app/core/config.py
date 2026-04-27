@@ -19,7 +19,7 @@ class Settings(BaseSettings):
 
     # App
     APP_NAME: str = "Damn Vulnerable Startup"
-    APP_VERSION: str = "1.0.0"
+    APP_VERSION: str = "1.0.1"
     DEBUG: bool = True
 
     # Session signing key

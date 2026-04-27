@@ -1,6 +1,6 @@
 # LLM06: Excessive Agency
 
-OWASP: https://genai.owasp.org/llmrisk/llm06-excessive-agency/
+OWASP: https://genai.owasp.org/llmrisk/llm062025-excessive-agency/
 CWE: CWE-269
 
 Excessive agency occurs when an LLM is given tools or permissions beyond what its task requires, and no authorization checks validate that the requested action is appropriate. The model can execute destructive operations, modify permissions, or chain multiple actions without human confirmation.

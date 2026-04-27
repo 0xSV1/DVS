@@ -1,6 +1,6 @@
 # LLM05: Improper Output Handling
 
-OWASP: https://genai.owasp.org/llmrisk/llm05-improper-output-handling/
+OWASP: https://genai.owasp.org/llmrisk/llm052025-improper-output-handling/
 CWE: CWE-79, CWE-89, CWE-918
 
 Improper output handling occurs when an application trusts LLM-generated content and renders or executes it without sanitization. The LLM becomes a proxy for injection attacks: the attacker prompts the model to generate malicious HTML, SQL, or URLs, and the application processes the output as trusted data.

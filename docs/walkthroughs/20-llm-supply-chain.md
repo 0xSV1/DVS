@@ -1,6 +1,6 @@
 # LLM03: Supply Chain Vulnerabilities
 
-OWASP: https://genai.owasp.org/llmrisk/llm03-supply-chain/
+OWASP: https://genai.owasp.org/llmrisk/llm032025-supply-chain/
 CWE: CWE-494
 
 LLM supply chain vulnerabilities arise from using unverified models, plugins, or dependencies. Compromised model weights can contain backdoors. Third-party plugins with excessive permissions can exfiltrate data. Without provenance verification and permission controls, the AI stack becomes a supply chain attack surface.

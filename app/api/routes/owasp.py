@@ -89,7 +89,7 @@ OWASP_LLM_2025 = [
     {
         "id": "LLM02",
         "name": "Sensitive Information Disclosure",
-        "url": "https://genai.owasp.org/llmrisk/llm02-sensitive-information-disclosure/",
+        "url": "https://genai.owasp.org/llmrisk/llm022025-sensitive-information-disclosure/",
         "desc": "LLM reveals confidential data from training data, system prompts, or connected data sources.",
     },
     {
@@ -101,7 +101,7 @@ OWASP_LLM_2025 = [
     {
         "id": "LLM06",
         "name": "Excessive Agency",
-        "url": "https://genai.owasp.org/llmrisk/llm06-excessive-agency/",
+        "url": "https://genai.owasp.org/llmrisk/llm062025-excessive-agency/",
         "desc": "LLM has access to tools or permissions beyond what is needed, enabling unintended actions.",
     },
     {
